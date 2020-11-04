@@ -14,6 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], function () {
+
+    Route::post('login', 'LoginController@login')->name('login');
+
+    Route::post('register', 'RegisterController@register')->name('register');
+
+    Route::group(['middleware' => ['auth:api']], function () {
+
+        Route::get('email/verify/{hash}', 'VerificationController@verify')->name('verification.verify');
+
+        Route::get('email/resend', 'VerificationController@resend')->name('verification.resend');
+
+        Route::get('user', 'AuthenticationController@user')->name('user');
+
+        Route::post('logout', 'LoginController@logout')->name('logout');
+
+    });
 });
+
+
+Route::get('users', 'App\Http\Controllers\UserController@index');
