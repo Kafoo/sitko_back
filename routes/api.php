@@ -20,6 +20,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], funct
 
     Route::post('register', 'RegisterController@register')->name('register');
 
+
     Route::group(['middleware' => ['auth:api']], function () {
 
         Route::get('email/verify/{hash}', 'VerificationController@verify')->name('verification.verify');
@@ -33,5 +34,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], funct
     });
 });
 
+Route::post('destroy', 'App\Http\Controllers\UserController@destroy')->name('destroy');
 
 Route::get('users', 'App\Http\Controllers\UserController@index');
