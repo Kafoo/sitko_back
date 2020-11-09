@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::middleware('auth:api')->group(function(){
+
+	Route::apiResource('project', 'App\Http\Controllers\ProjectController');
+});
+
+
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], function () {
 
     Route::post('login', 'LoginController@login')->name('login');
