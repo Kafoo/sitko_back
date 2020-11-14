@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::apiResource('event', 'App\Http\Controllers\EventController');
+
 Route::middleware('auth:api')->group(function(){
 
 	Route::apiResource('project', 'App\Http\Controllers\ProjectController');

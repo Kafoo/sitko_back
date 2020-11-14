@@ -9,10 +9,15 @@ class Project extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
     	'title',
     	'type',
     	'description'
     ];
+
+    public function events()
+    {
+        return $this->morphMany('App\Models\Event', 'child');
+    }
+
 }

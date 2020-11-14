@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -14,7 +15,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Project::all();
+        return Project::with('events')->get();
     }
 
     /**
@@ -26,7 +27,29 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
+
         $newProject = Project::create($request->all());
+
+        $events = [];
+
+        foreach ($request->get('events') as $event) {
+            $eventModel = new Event($event);
+            $eventModel->type('project');
+            $events[] = $eventModel;
+        }
+
+        $newEvents = $newProject->events()->saveMany($events);
+
+        $newProject->events = $newProject->events->all(); 
+        
+
+/*        foreach ($request->get('events') as $event) {
+            $event['type'] = 'project';
+            $event['child_id'] = $newProject->id;
+            $event['child_type'] = 'App\Models\Project';
+            $newEvent = Event::create($event);
+        }*/
+
 
         if($newProject){
 
@@ -60,10 +83,13 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         
-        if($project->update($request->all())){
+        $editedProject = tap($project)->update($request->all());
+
+        if($editedProject){
 
             return response()->json([
-                'success' => 'Projet modifié avec succès'
+                'success' => 'Projet modifié avec succès',
+                'project' => $editedProject
             ], 200);
 
         };
@@ -77,7 +103,15 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        if($project->delete()){
+
+        $event = Event::where('child_id', $project->id);
+        if ($event) {
+            $destroyEvent = $event->delete();
+        }
+
+        $destroyProject = $project->delete();
+
+        if($destroyProject){
 
             return response()->json([
                 'success' => 'Projet supprimé avec succès'
@@ -85,4 +119,5 @@ class ProjectController extends Controller
 
         };
     }
+
 }
