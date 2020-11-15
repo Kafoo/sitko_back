@@ -27,7 +27,6 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-
         $newProject = Project::create($request->all());
 
         $events = [];
@@ -41,15 +40,6 @@ class ProjectController extends Controller
         $newEvents = $newProject->events()->saveMany($events);
 
         $newProject->events = $newProject->events->all(); 
-        
-
-/*        foreach ($request->get('events') as $event) {
-            $event['type'] = 'project';
-            $event['child_id'] = $newProject->id;
-            $event['child_type'] = 'App\Models\Project';
-            $newEvent = Event::create($event);
-        }*/
-
 
         if($newProject){
 
@@ -82,8 +72,23 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        
+
         $editedProject = tap($project)->update($request->all());
+
+        $events = Event::where('child_id', $project->id);
+        if ($events) {
+            $destroyEvents = $events->delete();
+        }
+
+        $newEvents = [];
+
+        foreach ($request->get('events') as $event) {
+            $eventModel = new Event($event);
+            $eventModel->type('project');
+            $newEvents[] = $eventModel;
+        }
+
+        $editedProject->events = $project->events()->saveMany($newEvents);
 
         if($editedProject){
 
@@ -104,9 +109,9 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
 
-        $event = Event::where('child_id', $project->id);
-        if ($event) {
-            $destroyEvent = $event->delete();
+        $events = Event::where('child_id', $project->id);
+        if ($events) {
+            $destroyEvents = $events->delete();
         }
 
         $destroyProject = $project->delete();
