@@ -75,20 +75,24 @@ class ProjectController extends Controller
 
         $editedProject = tap($project)->update($request->all());
 
-        $events = Event::where('child_id', $project->id);
-        if ($events) {
-            $destroyEvents = $events->delete();
+        if ($request->get('projectOnly') !== true) {
+
+            $events = Event::where('child_id', $project->id);
+            if ($events) {
+                $destroyEvents = $events->delete();
+            }
+
+            $newEvents = [];
+
+            foreach ($request->get('events') as $event) {
+                $eventModel = new Event($event);
+                $eventModel->type('project');
+                $newEvents[] = $eventModel;
+            }
+
+            $editedProject->events = $project->events()->saveMany($newEvents);
         }
 
-        $newEvents = [];
-
-        foreach ($request->get('events') as $event) {
-            $eventModel = new Event($event);
-            $eventModel->type('project');
-            $newEvents[] = $eventModel;
-        }
-
-        $editedProject->events = $project->events()->saveMany($newEvents);
 
         if($editedProject){
 
