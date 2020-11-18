@@ -13,9 +13,9 @@ class UploadController extends Controller
     {
 
 
-       	$uploadedFileUrl = Cloudinary::upload($request->file);
+       	$result = $uploadedFileUrl = Cloudinary::upload($request->file);
 
-       	echo $uploadedFileUrl;
+       	echo $result->getSecurePath();
 
 /*    	$response = Http::post('https://api.imgbb.com/1/upload', [
     		'key' => '7618071644bd033d9b2f5b22619c5391'
