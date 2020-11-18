@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class UploadController extends Controller
 {
@@ -12,11 +13,16 @@ class UploadController extends Controller
     {
        	
 
-    	$response = Http::post('https://api.imgbb.com/1/upload?expiration=600&key=7618071644bd033d9b2f5b22619c5391', [
+       	$uploadedFileUrl = Cloudinary::upload($request->file('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'));
+
+       	echo $uploadedFileUrl;
+
+/*    	$response = Http::post('https://api.imgbb.com/1/upload', [
+    		'key' => '7618071644bd033d9b2f5b22619c5391'
 		    'image' => 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 			]);
     	echo 'yop';
-    	echo $response;
+    	echo $response;*/
 /*
 			# Our new data
 			$data = array(
