@@ -15,8 +15,7 @@ class UploadController extends Controller
 
        	$result = $uploadedFileUrl = Cloudinary::upload($request->file, [
                 'transformation' => [
-                    'gravity' => 'auto',
-                    'height' => 100,
+                    'crop' => 'thumb'
                 ]]);
 
        	echo $result->getSecurePath();
