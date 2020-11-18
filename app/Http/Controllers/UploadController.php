@@ -12,10 +12,8 @@ class UploadController extends Controller
     public function image(Request $request)
     {
 
-/*    		$file = $request->file('file');
-    		return $request->file;*/
 
-       	$uploadedFileUrl = Cloudinary::upload($request->file->getRealPath()->getSecurePath());
+       	$uploadedFileUrl = Cloudinary::upload($request->file);
 
        	echo $uploadedFileUrl;
 
