@@ -13,8 +13,7 @@ class UploadController extends Controller
        	
 
     	$response = Http::post('https://api.imgbb.com/1/upload?expiration=600&key=7618071644bd033d9b2f5b22619c5391', [
-		    'name' => 'Steve',
-		    'role' => 'Network Administrator',
+		    'image' => 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 			]);
     	echo 'yop';
     	echo $response;
