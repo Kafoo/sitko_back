@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::apiResource('event', 'App\Http\Controllers\EventController');
 
 Route::middleware('auth:api')->group(function(){
@@ -21,13 +23,14 @@ Route::middleware('auth:api')->group(function(){
 	Route::apiResource('project', 'App\Http\Controllers\ProjectController');
 });
 
+Route::post('imageupload', 'App\Http\Controllers\UploadController@image')->name('imageupload');
+
 
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], function () {
 
     Route::post('login', 'LoginController@login')->name('login');
 
     Route::post('register', 'RegisterController@register')->name('register');
-
 
     Route::group(['middleware' => ['auth:api']], function () {
 
@@ -38,6 +41,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], funct
         Route::get('user', 'AuthenticationController@user')->name('user');
 
         Route::post('logout', 'LoginController@logout')->name('logout');
+
 
     });
 });

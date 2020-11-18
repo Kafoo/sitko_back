@@ -24,7 +24,7 @@ class ProjectFactory extends Factory
         return [
             'title' => $this->faker->sentence(2, true),
             'type' => $this->faker->randomElement(['idée', 'commun', 'perso']),
-            'description' => $this->faker->paragraph(),
+            'description' => $this->faker->paragraph(rand(2,7)),
         ];
     }
 }
