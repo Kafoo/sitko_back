@@ -54,7 +54,7 @@ class ProjectController extends Controller
             $imageModel = new Image();
 
             $imageModel->full = $cloudResponse->getSecurePath();
-            $parts = explode('upload/', $requestProject['img']);
+            $parts = explode('upload/', $imageModel->full);
             $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
             $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
             $imageModel->id = $cloudResponse->getPublicId();
