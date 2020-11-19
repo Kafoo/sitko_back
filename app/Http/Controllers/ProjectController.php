@@ -99,7 +99,41 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
 
+        # Update project
+
         $editedProject = tap($project)->update($request->all());
+
+        # Update related image (Database + Cloudinary)
+
+        if ($request->imageChanged === true) {
+
+            // Deleting old image
+            $image = Image::where('imageable_id', $editedProject->id);
+
+            if (count($image->get()) > 0) {
+
+                Cloudinary::destroy($image->get()[0]->public_id);
+                $destroyImage = $image->delete();
+            }
+
+            // Storing new image
+            if ($request->image !== null) {
+
+                $cloudResponse = Cloudinary::upload($request->image);
+
+                $imageModel = new Image();
+
+                $imageModel->full = $cloudResponse->getSecurePath();
+                $parts = explode('upload/', $imageModel->full);
+                $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
+                $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+                $imageModel->public_id = $cloudResponse->getPublicId();
+
+                $newImage = $neditedProject->image()->save($imageModel);
+            }
+        }
+
+        # Update related events
 
         if ($request->get('projectOnly') !== true) {
 
@@ -119,6 +153,7 @@ class ProjectController extends Controller
             $editedProject->events = $project->events()->saveMany($newEvents);
         }
 
+        # Response
 
         if($editedProject){
 
@@ -139,20 +174,26 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
 
-
+        # Delete related events
 
         $events = Event::where('child_id', $project->id);
         if ($events) {
             $destroyEvents = $events->delete();
         }
 
+        # Delete related image (Database + Cloudinary)
+
         $image = Image::where('imageable_id', $project->id);
         if ($image) {
             Cloudinary::destroy($image->get()[0]->public_id);
-            $destroyEvents = $image->delete();
+            $destroyImage = $image->delete();
         }
 
+        # Delete project
+
         $destroyProject = $project->delete();
+
+        # Response
 
         if($destroyProject){
 
