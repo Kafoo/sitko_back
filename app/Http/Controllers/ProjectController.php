@@ -35,10 +35,7 @@ class ProjectController extends Controller
 
         if ($request->image !== null) {
 
-            $cloudResponse = Cloudinary::upload($request->image, [
-                'transformation' => [
-                    'crop' => 'thumb'
-                ]]);
+            $cloudResponse = Cloudinary::upload($request->image);
             $requestProject['img'] = $cloudResponse->getSecurePath();
             $parts = explode('upload/', $requestProject['img']);
             $requestProject['img_medium'] = $parts[0].'upload/t_medium/'.$parts[1];
