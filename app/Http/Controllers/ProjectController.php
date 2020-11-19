@@ -146,9 +146,9 @@ class ProjectController extends Controller
             $destroyEvents = $events->delete();
         }
 
-        $image = Image::where('imageable_id', $project->id)->get();
+        $image = Image::where('imageable_id', $project->id);
         if ($image) {
-            Cloudinary::destroy($image[0]->public_id);
+            Cloudinary::destroy($image->get()[0]->public_id);
             $destroyEvents = $image->delete();
         }
 
