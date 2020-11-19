@@ -64,6 +64,7 @@ class ProjectController extends Controller
 
         # Response
 
+        $newProject->image = $newImage;
         $newProject->events = $newProject->events->all(); 
 
         if($newProject){
@@ -146,7 +147,7 @@ class ProjectController extends Controller
         $image = Image::where('imageable_id', $project->id);
         if ($image) {
 
-            Cloudinary::destroy($image->id);
+            Cloudinary::destroy($image->get('public_id'));
             $destroyEvents = $image->delete();
         }
 
