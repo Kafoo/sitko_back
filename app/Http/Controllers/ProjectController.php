@@ -118,7 +118,7 @@ class ProjectController extends Controller
 
             // Storing new image
             if ($request->image !== null) {
-                echo "storing...";
+
                 $cloudResponse = Cloudinary::upload($request->image);
 
                 $imageModel = new Image();
@@ -131,6 +131,8 @@ class ProjectController extends Controller
 
                 $editedProject->image = $editedProject->image()->save($imageModel);
             }
+        }else{
+            $editedProject->image = $request->image;
         }
 
         # Update related events
