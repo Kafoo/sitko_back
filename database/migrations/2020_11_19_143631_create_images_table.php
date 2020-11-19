@@ -15,6 +15,7 @@ class CreateImagesTable extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
+            $table->string('public_id');
             $table->string('full');
             $table->string('medium');
             $table->string('thumb');

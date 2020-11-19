@@ -57,7 +57,7 @@ class ProjectController extends Controller
             $parts = explode('upload/', $imageModel->full);
             $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
             $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-            $imageModel->id = $cloudResponse->getPublicId();
+            $imageModel->public_id = $cloudResponse->getPublicId();
 
             $newImage = $newProject->image()->save($imageModel);
         }

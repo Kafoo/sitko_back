@@ -35,6 +35,7 @@ class ImageFactory extends Factory
 
 
         return [
+            'public_id' => 'bof',
             'full' => $full,
             'medium' => $medium,
             'thumb' => $thumb,
