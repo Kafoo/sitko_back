@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Event;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
@@ -16,7 +17,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Project::with('events')->get();
+        return Project::with(['events', 'image'])->get();
     }
 
     /**
@@ -28,24 +29,9 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-
-        $requestProject = $request->all();
-
-        # Uploading img to CLoudinary
-
-        if ($request->image !== null) {
-
-            $cloudResponse = Cloudinary::upload($request->image);
-            $requestProject['img'] = $cloudResponse->getSecurePath();
-            $parts = explode('upload/', $requestProject['img']);
-            $requestProject['img_medium'] = $parts[0].'upload/t_medium/'.$parts[1];
-            $requestProject['img_thumb'] = $parts[0].'upload/t_thumb/'.$parts[1];
-
-        }
-
         # Creating Project
 
-        $newProject = Project::create($requestProject);
+        $newProject = Project::create($request->all());
 
         #  Creating related events
 
@@ -58,6 +44,23 @@ class ProjectController extends Controller
         }
 
         $newEvents = $newProject->events()->saveMany($events);
+
+        # Uploading image to Cloudinary
+
+        if ($request->image !== null) {
+
+            $cloudResponse = Cloudinary::upload($request->image);
+
+            $imageModel = new Image();
+
+            $imageModel->full = $cloudResponse->getSecurePath();
+            $parts = explode('upload/', $requestProject['img']);
+            $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
+            $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+            $imageModel->id = $cloudResponse->getPublicId();
+
+            $newImage = $newProject->image()->save($imageModel);
+        }
 
         # Response
 
@@ -138,6 +141,13 @@ class ProjectController extends Controller
         $events = Event::where('child_id', $project->id);
         if ($events) {
             $destroyEvents = $events->delete();
+        }
+
+        $image = Image::where('imageable_id', $project->id);
+        if ($image) {
+
+            Cloudinary::destroy($image->id);
+            $destroyEvents = $image->delete();
         }
 
         $destroyProject = $project->delete();

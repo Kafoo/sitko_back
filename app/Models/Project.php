@@ -12,15 +12,17 @@ class Project extends Model
     protected $fillable = [
     	'title',
     	'type',
-    	'description',
-        'img',
-        'img_medium',
-        'img_thumb'
+    	'description'
     ];
 
     public function events()
     {
         return $this->morphMany('App\Models\Event', 'child');
+    }
+
+    public function image()
+    {
+        return $this->morphOne('App\Models\Image', 'imageable');
     }
 
 }

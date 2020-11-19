@@ -5,24 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class Image extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-    	'type',
-    	'start',
-    	'end',
-    	'timed',
-      'child_id',
-      'child_type'
+    	'full',
+    	'medum',
+    	'thumb',
+    	'deletion',
+        'imageable_id',
+        'imageable_type'
     ];
 
-	public function type($type){
-		$this->type = $type;
-	}
-
-    public function child()
+    public function imageable()
     {
         return $this->morphTo();
     }

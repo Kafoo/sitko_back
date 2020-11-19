@@ -33,8 +33,8 @@ class EventFactory extends Factory
             'start' => $start,
             'end' => $end,
             'timed' => $this->faker->boolean(),
-            'child_id' => 1281,
-            'child_type' => 'App\Models\Project'
+            'child_id' => 0,
+            'child_type' => ''
         ];
     }
 }
