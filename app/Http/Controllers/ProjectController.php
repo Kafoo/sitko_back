@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProjectController extends Controller
 {
@@ -27,7 +28,26 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-        $newProject = Project::create($request->all());
+
+        $requestProject = $request->all();
+
+        # Uploading img to CLoudinary
+
+        if ($request->image !== null) {
+
+            $cloudResponse = Cloudinary::upload($request->img);
+            $requestProject['img'] = $cloudResponse->getSecurePath();
+            $parts = explode('upload/', $requestProject['img']);
+            $requestProject['img_medium'] = $parts[0].'upload/t_medium/'.$parts[1];
+            $requestProject['img_thumb'] = $parts[0].'upload/t_thumb/'.$parts[1];
+
+        }
+
+        # Creating Project
+
+        $newProject = Project::create($requestProject);
+
+        #  Creating related events
 
         $events = [];
 
@@ -38,6 +58,8 @@ class ProjectController extends Controller
         }
 
         $newEvents = $newProject->events()->saveMany($events);
+
+        # Response
 
         $newProject->events = $newProject->events->all(); 
 

@@ -12,7 +12,10 @@ class Project extends Model
     protected $fillable = [
     	'title',
     	'type',
-    	'description'
+    	'description',
+        'img',
+        'img_medium',
+        'img_thumb'
     ];
 
     public function events()
