@@ -129,7 +129,7 @@ class ProjectController extends Controller
                 $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
                 $imageModel->public_id = $cloudResponse->getPublicId();
 
-                $newImage = $editedProject->image()->save($imageModel);
+                $editedProject->image = $editedProject->image()->save($imageModel);
             }
         }
 
