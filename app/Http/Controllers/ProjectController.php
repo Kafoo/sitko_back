@@ -63,8 +63,9 @@ class ProjectController extends Controller
         }
 
         # Response
-
-        $newProject->image = $newImage;
+        if ($newImage) {
+            $newProject->image = $newImage;
+        }
         $newProject->events = $newProject->events->all(); 
 
         if($newProject){
