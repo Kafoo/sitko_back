@@ -187,7 +187,7 @@ class ProjectController extends Controller
         # Delete related image (Database + Cloudinary)
 
         $image = Image::where('imageable_id', $project->id);
-        if ($image) {
+        if (count($image->get()) > 0) {
             Cloudinary::destroy($image->get()[0]->public_id);
             $destroyImage = $image->delete();
         }
