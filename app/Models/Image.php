@@ -12,7 +12,8 @@ class Image extends Model
     protected $fillable = [
         'public_id',
     	'full',
-    	'medum',
+        'medium',
+        'low_medium',
     	'thumb',
     	'deletion',
         'imageable_id',

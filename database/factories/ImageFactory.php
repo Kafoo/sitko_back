@@ -31,6 +31,7 @@ class ImageFactory extends Factory
 
         $parts = explode('upload/', $full);
         $medium = $parts[0].'upload/t_medium/'.$parts[1];
+        $low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
         $thumb = $parts[0].'upload/t_thumb/'.$parts[1];
 
 
@@ -38,6 +39,7 @@ class ImageFactory extends Factory
             'public_id' => 'bof',
             'full' => $full,
             'medium' => $medium,
+            'low_medium' => $low_medium,
             'thumb' => $thumb,
             'imageable_id' => 0,
             'imageable_type' => ""
