@@ -60,13 +60,10 @@ class ProjectController extends Controller
             $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
             $imageModel->public_id = $cloudResponse->getPublicId();
 
-            $newImage = $newProject->image()->save($imageModel);
+            $newProject->image = $newProject->image()->save($imageModel);
         }
 
-        # Response
-        if ($newImage) {
-            $newProject->image = $newImage;
-        }
+
         $newProject->events = $newProject->events->all(); 
 
         if($newProject){
