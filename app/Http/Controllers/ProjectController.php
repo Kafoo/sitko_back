@@ -64,16 +64,19 @@ class ProjectController extends Controller
 
                 try {                
                     $cloudResponse = Cloudinary::upload($request->image);
-                    $image_path = $cloudResponse->getSecurePath();
+
+                    $path = $cloudResponse->getSecurePath();
                     $public_id = $cloudResponse->getPublicId();
 
-                    $imageModel = new Image($image_path, $public_id);
+                    $imageModel = new Image();
+                    $imageModel->hydrate($path, $public_id);
 
                     $newProject->image = $newProject->image()->save($imageModel);
 
                 } catch (\Exception $e) {
 
                     $errors['image'] = "l'image n'a pas pu être ajoutée au projet";
+                    $errors['image_source'] = $e->getMessage();
                 }
             }
 
