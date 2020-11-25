@@ -7,6 +7,21 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+
+
+    public function __construct($image_path, $public_id){
+
+        $this->full = $image_path;
+
+        $parts = explode('upload/', $this->full);
+
+        $this->medium = $parts[0].'upload/t_medium/'.$parts[1];
+        $this->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
+        $this->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+        $this->public_id = $public_id;
+
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Image;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -29,51 +30,72 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-        # Creating Project
+        $response = DB::transaction(function () use ($request) {
 
-        $newProject = Project::create($request->all());
+            $errors = [];
 
-        #  Creating related events
+            # Creating Project
 
-        $events = [];
+            $newProject = Project::create($request->all());
 
-        foreach ($request->get('events') as $event) {
-            $eventModel = new Event($event);
-            $eventModel->type('project');
-            $events[] = $eventModel;
-        }
+            #  Creating related events
 
-        $newEvents = $newProject->events()->saveMany($events);
+            $events = [];
 
-        # Uploading image to Cloudinary
+            try {
+                foreach ($request->get('events') as $event) {
+                    $eventModel = new Event($event);
+                    $eventModel->type('project');
+                    $events[] = $eventModel;
+                }
 
-        if ($request->image !== null) {
+                $newEvents = $newProject->events()->saveMany($events);
 
-            $cloudResponse = Cloudinary::upload($request->image);
+                $newProject->events = $newProject->events->all(); 
 
-            $imageModel = new Image();
+            } catch (\Exception $e) {
 
-            $imageModel->full = $cloudResponse->getSecurePath();
-            $parts = explode('upload/', $imageModel->full);
-            $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
-            $imageModel->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
-            $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-            $imageModel->public_id = $cloudResponse->getPublicId();
+                $errors['image'] = "l'image n'a pas pu être téléchargée";   
+            }
+            
+            # Uploading image to Cloudinary
 
-            $newProject->image = $newProject->image()->save($imageModel);
-        }
+            if ($request->image !== null) {
 
+                try {                
+                    $cloudResponse = Cloudinary::upload($request->image);
+                    $image_path = $cloudResponse->getSecurePath();
+                    $public_id = $cloudResponse->getPublicId();
 
-        $newProject->events = $newProject->events->all(); 
+                    $imageModel = new Image($image_path, $public_id);
 
-        if($newProject){
+                    $newProject->image = $newProject->image()->save($imageModel);
 
-            return response()->json([
-                'success' => 'Projet créé avec succès',
-                'project' => $newProject
-            ], 200);
+                } catch (\Exception $e) {
 
-        };
+                    $errors['image'] = "l'image n'a pas pu être ajoutée au projet";
+                }
+            }
+
+            # Reponse
+
+            if (count($errors) > 0) {
+
+                return response()->json([
+                    'success' => false,
+                    'errors' => $errors
+                ], 500);
+
+            }else{
+
+                return response()->json([
+                    'success' => 'Projet créé avec succès',
+                    'project' => $newProject
+                ], 200);
+            }
+        });
+
+        return $response;
 
     }
 
