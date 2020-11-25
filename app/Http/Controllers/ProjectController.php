@@ -64,9 +64,8 @@ class ProjectController extends Controller
 
                 try {                
 
-                    $cloudinary = Cloudinary::upload($request->image);
                     $imageModel = new Image();
-                    $imageModel->fill($cloudinary);
+                    $imageModel->cloudinary($request->image);
                     $newProject->image = $newProject->image()->save($imageModel);
 
                 } catch (\Exception $e) {
@@ -139,19 +138,20 @@ class ProjectController extends Controller
             // Storing new image
             if ($request->image !== null) {
 
-                $cloudResponse = Cloudinary::upload($request->image);
+                try {                
 
-                $imageModel = new Image();
+                    $imageModel = new Image();
+                    $imageModel->cloudinary($request->image);
+                    $editedProject->image = $editedProject->image()->save($imageModel);
 
-                $imageModel->full = $cloudResponse->getSecurePath();
-                $parts = explode('upload/', $imageModel->full);
-                $imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
-                $imageModel->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
-                $imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-                $imageModel->public_id = $cloudResponse->getPublicId();
+                } catch (\Exception $e) {
 
-                $editedProject->image = $editedProject->image()->save($imageModel);
+                    $errors['image'] = "l'image n'a pas pu être mise à jour";
+                    $errors['image_source'] = $e->getMessage();
+                }
+
             }
+
         }else{
             $editedProject->image = $request->image;
         }

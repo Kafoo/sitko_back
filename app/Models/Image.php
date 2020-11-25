@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class Image extends Model
 {
@@ -21,16 +22,19 @@ class Image extends Model
     ];
 
 
-    public function fill($cloudinary)
+    public function cloudinary($img)
     {
-        $this->full = $cloudinary->getSecurePath();
+
+        $cloudinary_response = Cloudinary::upload($img);
+
+        $this->full = $cloudinary_response->getSecurePath();
 
         $parts = explode('upload/', $this->full);
 
         $this->medium = $parts[0].'upload/t_medium/'.$parts[1];
         $this->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
         $this->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-        $this->public_id = $cloudinary->getPublicId();
+        $this->public_id = $cloudinary_response->getPublicId();
 
     }
 
