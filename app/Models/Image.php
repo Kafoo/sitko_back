@@ -20,6 +20,22 @@ class Image extends Model
         'imageable_type'
     ];
 
+
+    public function __construct($cloudinary, $attributes = array())
+    {
+        parent::__construct($attributes);
+
+        $this->full = $cloudinary->getSecurePath();
+
+        $parts = explode('upload/', $this->full);
+
+        $this->medium = $parts[0].'upload/t_medium/'.$parts[1];
+        $this->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
+        $this->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+        $this->public_id = $cloudinary->getPublicId();
+
+    }
+
     public function imageable()
     {
         return $this->morphTo();

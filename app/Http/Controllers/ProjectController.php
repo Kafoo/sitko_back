@@ -63,14 +63,9 @@ class ProjectController extends Controller
             if ($request->image !== null) {
 
                 try {                
-                    $cloudResponse = Cloudinary::upload($request->image);
 
-                    $path = $cloudResponse->getSecurePath();
-                    $public_id = $cloudResponse->getPublicId();
-
-                    $imageModel = new Image();
-                    $imageModel->hydrate($path, $public_id);
-
+                    $cloudinary = Cloudinary::upload($request->image);
+                    $imageModel = new Image($cloudinary);
                     $newProject->image = $newProject->image()->save($imageModel);
 
                 } catch (\Exception $e) {
