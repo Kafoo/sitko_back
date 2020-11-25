@@ -21,10 +21,8 @@ class Image extends Model
     ];
 
 
-    public function __construct($cloudinary, $attributes = array())
+    public function fillFromCloud($cloudinary)
     {
-        parent::__construct($attributes);
-
         $this->full = $cloudinary->getSecurePath();
 
         $parts = explode('upload/', $this->full);
