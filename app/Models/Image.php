@@ -21,7 +21,7 @@ class Image extends Model
     ];
 
 
-    public function fillFromCloud($cloudinary)
+    public function fill($cloudinary)
     {
         $this->full = $cloudinary->getSecurePath();
 

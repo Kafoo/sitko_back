@@ -66,7 +66,7 @@ class ProjectController extends Controller
 
                     $cloudinary = Cloudinary::upload($request->image);
                     $imageModel = new Image();
-                    $imageModel->fillFromCloud($cloudinary);
+                    $imageModel->fill($cloudinary);
                     $newProject->image = $newProject->image()->save($imageModel);
 
                 } catch (\Exception $e) {
