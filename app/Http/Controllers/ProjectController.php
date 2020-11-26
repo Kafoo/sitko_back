@@ -30,70 +30,68 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
-        $response = DB::transaction(function () use ($request) {
+        DB::beginTransaction();
 
-            $errors = [];
+        # Creating Project
 
-            # Creating Project
+        try {
 
             $newProject = Project::create($request->all());
 
-            #  Creating related events
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            abort(500, "le projet n'a pas pu être créé"); 
+        }
 
-            $events = [];
+        #  Creating related events
 
-            try {
-                foreach ($request->get('events') as $event) {
-                    $eventModel = new Event($event);
-                    $eventModel->type('project');
-                    $events[] = $eventModel;
-                }
+        $events = [];
 
-                $newEvents = $newProject->events()->saveMany($events);
+        try {
+            foreach ($request->get('events') as $event) {
+                $eventModel = new Event($event);
+                $eventModel->type('project');
+                $events[] = $eventModel;
+            }
 
-                $newProject->events = $newProject->events->all(); 
+            $newEvents = $newProject->events()->saveMany($events);
+
+            $newProject->events = $newProject->events->all(); 
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            abort(500, "les événements n'ont pas pu être créés"); 
+        }
+        
+        # Uploading image to Cloudinary
+
+        if ($request->image !== null) {
+
+            try {                
+
+                $imageModel = new Image();
+                $imageModel->cloudinary($request->image);
+                $newProject->image = $newProject->image()->save($imageModel);
 
             } catch (\Exception $e) {
 
-                $errors['image'] = "l'image n'a pas pu être téléchargée";   
+                DB::rollback();
+                abort(500, "l'image n'a pas pu être téléchargée"); 
             }
-            
-            # Uploading image to Cloudinary
+        }
 
-            if ($request->image !== null) {
+        # Reponse
 
-                try {                
+        DB::commit();
 
-                    $imageModel = new Image();
-                    $imageModel->cloudinary($request->image);
-                    $newProject->image = $newProject->image()->save($imageModel);
+        return response()->json([
+            'success' => 'Projet créé avec succès',
+            'project' => $newProject
+        ], 200);
 
-                } catch (\Exception $e) {
 
-                    $errors['image'] = "l'image n'a pas pu être ajoutée au projet";
-                    $errors['image_source'] = $e->getMessage();
-                }
-            }
-
-            # Reponse
-
-            if (count($errors) > 0) {
-
-                return response()->json([
-                    'success' => false,
-                    'errors' => $errors
-                ], 500);
-
-            }else{
-
-                return response()->json([
-                    'success' => 'Projet créé avec succès',
-                    'project' => $newProject
-                ], 200);
-            }
-        });
-
-        return $response;
 
     }
 
@@ -118,74 +116,96 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
 
+        DB::beginTransaction();
+
+        $errors = [];
+
         # Update project
 
-        $editedProject = tap($project)->update($request->all());
+        try {       
+
+            $editedProject = tap($project)->update($request->all());
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            abort(500, "le projet n'a pas pu être modifié"); 
+        }
 
         # Update related image (Database + Cloudinary)
 
-        if ($request->imageChanged === true) {
+        try {                
 
-            // Deleting old image
-            $image = Image::where('imageable_id', $editedProject->id);
+            if ($request->imageChanged === true) {
 
-            if (count($image->get()) > 0) {
+                // Deleting old image
+                $image = Image::where('imageable_id', $editedProject->id);
 
-                Cloudinary::destroy($image->get()[0]->public_id);
-                $destroyImage = $image->delete();
-            }
+                if (count($image->get()) > 0) {
 
-            // Storing new image
-            if ($request->image !== null) {
+                    Cloudinary::destroy($image->get()[0]->public_id);
+                    $destroyImage = $image->delete();
+                }
 
-                try {                
+                // Storing new image
+                if ($request->image !== null) {           
 
                     $imageModel = new Image();
                     $imageModel->cloudinary($request->image);
                     $editedProject->image = $editedProject->image()->save($imageModel);
 
-                } catch (\Exception $e) {
-
-                    $errors['image'] = "l'image n'a pas pu être mise à jour";
-                    $errors['image_source'] = $e->getMessage();
                 }
 
+            }else{
+                $editedProject->image = $request->image;
             }
 
-        }else{
-            $editedProject->image = $request->image;
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            abort(500, "l'image n'a pas pu être modifiée"); 
         }
 
         # Update related events
 
         if ($request->get('projectOnly') !== true) {
 
-            $events = Event::where('child_id', $project->id);
-            if ($events) {
-                $destroyEvents = $events->delete();
+            try {
+                
+                $events = Event::where('child_id', $project->id);
+                if ($events) {
+                    $destroyEvents = $events->delete();
+                }
+
+                $newEvents = [];
+
+                foreach ($request->get('events') as $event) {
+                    $eventModel = new Event($event);
+                    $eventModel->type('project');
+                    $newEvents[] = $eventModel;
+                }
+
+                $editedProject->events = $project->events()->saveMany($newEvents);
+
+            } catch (\Exception $e) {
+
+                DB::rollback();
+                abort(500, "les événements n'ont pas pu être modifiés"); 
+
             }
-
-            $newEvents = [];
-
-            foreach ($request->get('events') as $event) {
-                $eventModel = new Event($event);
-                $eventModel->type('project');
-                $newEvents[] = $eventModel;
-            }
-
-            $editedProject->events = $project->events()->saveMany($newEvents);
         }
 
-        # Response
+        # Reponse
 
-        if($editedProject){
+        DB::commit();
 
-            return response()->json([
-                'success' => 'Projet modifié avec succès',
-                'project' => $editedProject
-            ], 200);
+        return response()->json([
+            'success' => 'Projet modifié avec succès',
+            'project' => $editedProject
+        ], 200);
 
-        };
+
+
     }
 
     /**
@@ -197,34 +217,61 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
 
+        DB::beginTransaction();
+
         # Delete related events
 
-        $events = Event::where('child_id', $project->id);
-        if ($events) {
-            $destroyEvents = $events->delete();
+        try {
+            
+            $events = Event::where('child_id', $project->id);
+            if ($events) {
+                $destroyEvents = $events->delete();
+            }
+
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            abort(500, "les événements n'ont pas pu être supprimés"); 
         }
 
         # Delete related image (Database + Cloudinary)
 
-        $image = Image::where('imageable_id', $project->id);
-        if (count($image->get()) > 0) {
-            Cloudinary::destroy($image->get()[0]->public_id);
-            $destroyImage = $image->delete();
+        try {
+            
+            $image = Image::where('imageable_id', $project->id);
+            if (count($image->get()) > 0) {
+                Cloudinary::destroy($image->get()[0]->public_id);
+                $destroyImage = $image->delete();
+            }
+
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            abort(500, "l'image n'a pas pu être supprimée"); 
         }
 
         # Delete project
 
-        $destroyProject = $project->delete();
+        try {
+            
+            $destroyProject = $project->delete();
 
-        # Response
+        } catch (\Exception $e) {
 
-        if($destroyProject){
+            DB::rollback();
+            abort(500, "le projet n'a pas pu être supprimé"); 
+        }
 
-            return response()->json([
-                'success' => 'Projet supprimé avec succès'
-            ], 200);
+        # Reponse
 
-        };
+        DB::commit();
+
+        return response()->json([
+            'success' => 'Projet supprimé avec succès',
+        ], 200);
+
+
+
     }
 
 }
