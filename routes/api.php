@@ -16,12 +16,22 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::apiResource('event', 'App\Http\Controllers\EventController');
 
 Route::middleware('auth:api')->group(function(){
 
+	Route::apiResource('place', 'App\Http\Controllers\PlaceController');
+
+	Route::apiResource('event', 'App\Http\Controllers\EventController');
+
+	Route::apiResource('place.event', 'App\Http\Controllers\EventController');
+
 	Route::apiResource('project', 'App\Http\Controllers\ProjectController');
+
+	Route::apiResource('place.project', 'App\Http\Controllers\ProjectController');
+
 });
+
+
 
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], function () {
 

@@ -12,8 +12,15 @@ class Project extends Model
     protected $fillable = [
     	'title',
     	'type',
-    	'description'
+    	'description',
+        'place_id'
     ];
+
+
+    public function place()
+    {
+        return $this->belongsTo('App\Models\Place');
+    }
 
     public function events()
     {

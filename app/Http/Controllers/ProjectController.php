@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Place;
 use App\Models\Event;
 use App\Models\Image;
 use Illuminate\Http\Request;
@@ -16,9 +17,19 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($place_id = null)
     {
-        return Project::with(['events', 'image'])->get();
+
+        #Index by place
+
+        if ($place_id) {
+            return Place::find($place_id)->projects()->with(['events', 'image'])->get();
+
+        # Index all
+
+        }else{
+            return Project::with(['events', 'image'])->get();
+        }
     }
 
     /**

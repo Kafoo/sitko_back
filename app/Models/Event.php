@@ -14,9 +14,15 @@ class Event extends Model
     	'start',
     	'end',
     	'timed',
-      'child_id',
-      'child_type'
+        'child_id',
+        'child_type',
+        'place_id'
     ];
+
+    public function place()
+    {
+        return $this->belongsTo('App\Models\Place');
+    }
 
 	public function type($type){
 		$this->type = $type;
