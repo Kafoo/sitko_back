@@ -14,8 +14,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        $places = Place::with('image')->get();
-        return response()->json($places);
+        return Place::with('image')->get();
     }
 
     /**
@@ -48,8 +47,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        $place = Place::with('image')->find($placeId);
-        return response()->json($place);
+        return Place::with('image')->find($placeId);
     }
 
     /**

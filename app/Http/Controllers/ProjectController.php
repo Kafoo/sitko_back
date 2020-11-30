@@ -32,6 +32,7 @@ class ProjectController extends Controller
         }
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -57,22 +58,14 @@ class ProjectController extends Controller
 
         #  Creating related events
 
-        $events = [];
-
         try {
-            foreach ($request->get('events') as $event) {
-                $eventModel = new Event($event);
-                $eventModel->type('project');
-                $events[] = $eventModel;
-            }
 
-            $newEvents = $newProject->events()->saveMany($events);
-
-            $newProject->events = $newProject->events->all(); 
+            $newProject->storeEvents($request->get('events'));
 
         } catch (\Exception $e) {
 
             DB::rollback();
+            abort(500, $e->getMessage()); 
             abort(500, "les événements n'ont pas pu être créés"); 
         }
         
@@ -82,13 +75,12 @@ class ProjectController extends Controller
 
             try {                
 
-                $imageModel = new Image();
-                $imageModel->cloudinary($request->image);
-                $newProject->image = $newProject->image()->save($imageModel);
+                $newProject->storeImage($newProject, $request->image);
 
             } catch (\Exception $e) {
 
                 DB::rollback();
+                abort(500, $e->getMessage()); 
                 abort(500, "l'image n'a pas pu être téléchargée"); 
             }
         }
@@ -101,10 +93,8 @@ class ProjectController extends Controller
             'success' => 'Projet créé avec succès',
             'project' => $newProject
         ], 200);
-
-
-
     }
+
 
     /**
      * Display the specified resource.
@@ -116,6 +106,7 @@ class ProjectController extends Controller
     {
         return $project;
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -150,20 +141,13 @@ class ProjectController extends Controller
             if ($request->imageChanged === true) {
 
                 // Deleting old image
-                $image = Image::where('imageable_id', $editedProject->id);
 
-                if (count($image->get()) > 0) {
-
-                    Cloudinary::destroy($image->get()[0]->public_id);
-                    $destroyImage = $image->delete();
-                }
+                $editedProject->deleteImageIfExists();;
 
                 // Storing new image
                 if ($request->image !== null) {           
 
-                    $imageModel = new Image();
-                    $imageModel->cloudinary($request->image);
-                    $editedProject->image = $editedProject->image()->save($imageModel);
+                    $editedProject->storeImage($request->image);
 
                 }
 
@@ -188,15 +172,7 @@ class ProjectController extends Controller
                     $destroyEvents = $events->delete();
                 }
 
-                $newEvents = [];
-
-                foreach ($request->get('events') as $event) {
-                    $eventModel = new Event($event);
-                    $eventModel->type('project');
-                    $newEvents[] = $eventModel;
-                }
-
-                $editedProject->events = $project->events()->saveMany($newEvents);
+                $editedProject->storeEvents($request->get('events'));
 
             } catch (\Exception $e) {
 
@@ -214,10 +190,8 @@ class ProjectController extends Controller
             'success' => 'Projet modifié avec succès',
             'project' => $editedProject
         ], 200);
-
-
-
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -249,15 +223,12 @@ class ProjectController extends Controller
 
         try {
             
-            $image = Image::where('imageable_id', $project->id);
-            if (count($image->get()) > 0) {
-                Cloudinary::destroy($image->get()[0]->public_id);
-                $destroyImage = $image->delete();
-            }
+            $project->deleteImageIfExists();
 
         } catch (\Exception $e) {
             
             DB::rollback();
+            abort(500, $e->getMessage()); 
             abort(500, "l'image n'a pas pu être supprimée"); 
         }
 
@@ -280,8 +251,6 @@ class ProjectController extends Controller
         return response()->json([
             'success' => 'Projet supprimé avec succès',
         ], 200);
-
-
 
     }
 

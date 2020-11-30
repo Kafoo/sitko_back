@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-
-
 Route::middleware('auth:api')->group(function(){
 
 	Route::apiResource('place', 'App\Http\Controllers\PlaceController');
@@ -28,6 +26,8 @@ Route::middleware('auth:api')->group(function(){
 	Route::apiResource('project', 'App\Http\Controllers\ProjectController');
 
 	Route::apiResource('place.project', 'App\Http\Controllers\ProjectController');
+
+    Route::apiResource('user', 'App\Http\Controllers\UserController');
 
 });
 
@@ -52,7 +52,3 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], funct
 
     });
 });
-
-Route::post('destroy', 'App\Http\Controllers\UserController@destroy')->name('destroy');
-
-Route::get('users', 'App\Http\Controllers\UserController@index');

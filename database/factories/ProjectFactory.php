@@ -22,10 +22,12 @@ class ProjectFactory extends Factory
     public function definition()
     {
 
+        
+
         return [
             'title' => $this->faker->sentence(2, true),
             'type' => $this->faker->randomElement(['idée', 'commun', 'perso']),
-            'description' => $this->faker->paragraph(rand(2,7))
+            'description' => '[F] '$this->faker->paragraph(rand(2,7))
         ];
     }
 }

@@ -13,7 +13,7 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($place_id)
+    public function index($place_id = null)
     {
 
         #Index by place

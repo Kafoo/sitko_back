@@ -9,20 +9,29 @@ class Place extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 
-	public function projects()
-	{
-	    return $this->hasMany('App\Models\Project');
-	}
+		public function projects()
+		{
+		    return $this->hasMany('App\Models\Project');
+		}
 
-	public function events()
-	{
-	    return $this->hasMany('App\Models\Event');
-	}
+		public function events()
+		{
+		    return $this->hasMany('App\Models\Event');
+		}
 
-	public function image()
-	{
-	    return $this->morphOne('App\Models\Image', 'imageable');
-	}
+		public function image()
+		{
+		    return $this->morphOne('App\Models\Image', 'imageable');
+		}
 
 }

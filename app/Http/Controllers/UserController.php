@@ -10,14 +10,12 @@ class UserController extends Controller
 
 	public function index(Request $request)
 	{
-		$users = User::all();
-		return response()->json($users);
+		return User::all();
 	}
 
 
-	public function destroy(Request $request)
+	public function destroy($userID)
 	{
-		$userID = $request->input('id');
-		return response()->json(User::find($userID)->delete());
+		return User::find($userID)->delete();
 	}
 }
