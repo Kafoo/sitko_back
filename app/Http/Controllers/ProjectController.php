@@ -75,7 +75,7 @@ class ProjectController extends Controller
 
             try {                
 
-                $newProject->storeImage($newProject, $request->image);
+                $newProject->storeImage($request->image);
 
             } catch (\Exception $e) {
 
