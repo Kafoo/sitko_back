@@ -134,6 +134,11 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'invalid-data' => 'Invalid data.',
+        'unique' => [
+            'name' => "':input' alias has already been taken.",
+            'email' => "This e-mail adress is already in our database."
+        ]
     ],
 
     /*

@@ -50,11 +50,23 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+
+        //First Name will be considered as Alias if no Last Name is provided.
+        //If so, Alias has to be unique 
+        if ($data['last_name']) {
+            $nameRules = ['required', 'string', 'max:255'];
+        }else{ 
+            $nameRules = ['required', 'string', 'max:255', 'unique:users'];
+        }
+
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => $nameRules,
             'last_name' => ['max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],[
+            'name.unique' => trans('validation.custom.unique.name', ['input' => $data['name']]),
+            'email.unique' => trans('validation.custom.unique.email', ['input' => $data['email']])
         ]);
     }
 

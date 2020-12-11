@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Place;
 use App\Models\Event;
-use App\Models\Image;
 use Illuminate\Http\Request;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
@@ -42,6 +40,8 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
 
+       $fail_message = trans('crud.fail.project.creation');
+
         DB::beginTransaction();
 
         # Creating Project
@@ -53,7 +53,9 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             
             DB::rollback();
-            abort(500, "le projet n'a pas pu être créé"); 
+            return response()->json([
+                'message' => $fail_message,
+            ], 500);
         }
 
         #  Creating related events
@@ -65,8 +67,10 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-            abort(500, $e->getMessage()); 
-            abort(500, "les événements n'ont pas pu être créés"); 
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.events.creation')
+            ], 500);
         }
         
         # Uploading image to Cloudinary
@@ -80,17 +84,19 @@ class ProjectController extends Controller
             } catch (\Exception $e) {
 
                 DB::rollback();
-                abort(500, $e->getMessage()); 
-                abort(500, "l'image n'a pas pu être téléchargée"); 
+                return response()->json([
+                    'message' => $fail_message,
+                    'info' => trans('crud.fail.image.creation')
+                ], 500);
             }
         }
 
-        # Reponse
+        # Success
 
         DB::commit();
 
         return response()->json([
-            'success' => 'Projet créé avec succès',
+            'success' => trans('crud.success.project.creation'),
             'project' => $newProject
         ], 200);
     }
@@ -118,6 +124,8 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
 
+        $fail_message = trans('crud.fail.project.update');
+
         DB::beginTransaction();
 
         $errors = [];
@@ -131,24 +139,25 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-            abort(500, "le projet n'a pas pu être modifié"); 
+            return response()->json([
+                'message' => $fail_message,
+            ], 500);
         }
 
         # Update related image (Database + Cloudinary)
 
         try {                
 
-            if ($request->imageChanged === true) {
+            if ($request->imageChanged) {
 
                 // Deleting old image
 
                 $editedProject->deleteImageIfExists();;
 
                 // Storing new image
-                if ($request->image !== null) {           
+                if ($request->image) {           
 
                     $editedProject->storeImage($request->image);
-
                 }
 
             }else{
@@ -158,7 +167,10 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-            abort(500, "l'image n'a pas pu être modifiée"); 
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.image.update')
+            ], 500);
         }
 
         # Update related events
@@ -167,9 +179,8 @@ class ProjectController extends Controller
 
             try {
                 
-                $events = Event::where('child_id', $project->id);
-                if ($events) {
-                    $destroyEvents = $events->delete();
+                if ($events = Event::where('child_id', $project->id)) {
+                    $events->delete();
                 }
 
                 $editedProject->storeEvents($request->get('events'));
@@ -177,17 +188,19 @@ class ProjectController extends Controller
             } catch (\Exception $e) {
 
                 DB::rollback();
-                abort(500, "les événements n'ont pas pu être modifiés"); 
-
+                return response()->json([
+                    'message' => $fail_message,
+                    'info' => trans('crud.fail.events.update')
+                ], 500);
             }
         }
 
-        # Reponse
+        # Success
 
         DB::commit();
 
         return response()->json([
-            'success' => 'Projet modifié avec succès',
+            'success' => trans('crud.success.project.update'),
             'project' => $editedProject
         ], 200);
     }
@@ -202,21 +215,25 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
 
+        $fail_message = trans('crud.fail.project.deletion');
+
         DB::beginTransaction();
 
         # Delete related events
 
         try {
             
-            $events = Event::where('child_id', $project->id);
-            if ($events) {
-                $destroyEvents = $events->delete();
+            if ($events = Event::where('child_id', $project->id)) {
+               $events->delete();
             }
 
         } catch (\Exception $e) {
             
             DB::rollback();
-            abort(500, "les événements n'ont pas pu être supprimés"); 
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.events.deletion')
+            ], 500);
         }
 
         # Delete related image (Database + Cloudinary)
@@ -228,28 +245,32 @@ class ProjectController extends Controller
         } catch (\Exception $e) {
             
             DB::rollback();
-            abort(500, $e->getMessage()); 
-            abort(500, "l'image n'a pas pu être supprimée"); 
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.image.deletion')
+            ], 500);
         }
 
         # Delete project
 
         try {
             
-            $destroyProject = $project->delete();
+            $project->delete();
 
         } catch (\Exception $e) {
 
             DB::rollback();
-            abort(500, "le projet n'a pas pu être supprimé"); 
+            return response()->json([
+                'message' => $fail_message
+            ], 500);
         }
 
-        # Reponse
+        # Success
 
         DB::commit();
 
         return response()->json([
-            'success' => 'Projet supprimé avec succès',
+            'success' => trans('crud.success.project.deletion'),
         ], 200);
 
     }

@@ -133,6 +133,12 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'invalid-data' => 'Informations non valides',
+        'unique' => [
+            'name' => "Le pseudo ':input' est déjà utilisé.",
+            'email' => "Cette adresse email est déjà utilisée."
+
+        ]
     ],
 
     /*
