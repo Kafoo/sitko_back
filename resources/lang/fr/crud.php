@@ -15,6 +15,11 @@ return [
         'update' => "Erreur lors de la modification du projet",
         'deletion' => "Erreur lors de la suppression du projet"
       ],
+      'place' => [
+        'creation' => "Erreur lors de la création du lieu",
+        'update' => "Erreur lors de la modification du lieu",
+        'deletion' => "Erreur lors de la suppression du lieu"
+      ],
       'events' => [
         'creation' => "Les événements n'ont pas pu être créés",
         'update' => "Les événements n'ont pas pu être modifiés",

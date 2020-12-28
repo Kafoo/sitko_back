@@ -16,7 +16,7 @@ class ProjectSeeder extends Seeder
     public function run()
     {
 
-        $projects = \App\Models\Project::factory(10)->create()
+        \App\Models\Project::factory(10)->create()
         ->each(function($projects){
             $projects->events()->save(\App\Models\Event::factory()->create());
 

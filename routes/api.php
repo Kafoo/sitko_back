@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function(){
 
 	Route::apiResource('place', 'App\Http\Controllers\PlaceController');
+
+	Route::apiResource('tag', 'App\Http\Controllers\TagController');
 
 	Route::apiResource('event', 'App\Http\Controllers\EventController');
 

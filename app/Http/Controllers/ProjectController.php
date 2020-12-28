@@ -128,8 +128,6 @@ class ProjectController extends Controller
 
         DB::beginTransaction();
 
-        $errors = [];
-
         # Update project
 
         try {       

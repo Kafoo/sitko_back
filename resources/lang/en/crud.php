@@ -15,6 +15,11 @@ return [
         'update' => "Project could not be updated",
         'deletion' => "Project could not be deleted"
       ],
+      'place' => [
+        'creation' => "Place could not be created",
+        'update' => "Place could not be updated",
+        'deletion' => "Place could not be deleted"
+      ],
       'events' => [
         'creation' => "Events creation failed",
         'update' => "Events update failed",
