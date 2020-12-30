@@ -59,7 +59,8 @@ class PlaceController extends Controller
                 DB::rollback();
                 return response()->json([
                     'message' => $fail_message,
-                    'info' => trans('crud.fail.image.creation')
+                    'info' => trans('crud.fail.image.creation'),
+                    'more' => $e->getMessage()
                 ], 500);
             }
         }
@@ -69,7 +70,7 @@ class PlaceController extends Controller
         DB::commit();
 
         return response()->json([
-            'success' => trans('crud.success.project.creation'),
+            'success' => trans('crud.success.place.creation'),
             'project' => $newPlace
         ], 200);
     }

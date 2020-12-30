@@ -32,13 +32,6 @@ class Place extends Model
     ];
 
 
-    public function storeImage($image){
-
-        $imageModel = new Image();
-        $imageModel->cloudinary($image);
-        $this->image = $this->image()->save($imageModel);
-    }
-
 		public function projects()
 		{
 		    return $this->hasMany('App\Models\Project');
@@ -59,4 +52,19 @@ class Place extends Model
 		    return $this->morphMany('App\Models\Tag', 'tagable');
 		}
 
+    public function storeImage($image){
+
+				// If we have a string (Blob), upload it to cloudinary
+				if (gettype($image) === "string" ) {
+					$imageModel = new Image();
+					$imageModel->cloudinary($image);
+					$this->image = $this->image()->save($imageModel);
+
+				// Else, we should already have a proper image model 
+				}else{
+					$imageModel = new Image($image);
+					$this->image = $this->image()->save($imageModel);
+				}
+
+    }
 }
