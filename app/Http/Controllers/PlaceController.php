@@ -59,8 +59,7 @@ class PlaceController extends Controller
                 DB::rollback();
                 return response()->json([
                     'message' => $fail_message,
-                    'info' => trans('crud.fail.image.creation'),
-                    'more' => $e->getMessage()
+                    'info' => trans('crud.fail.image.creation')
                 ], 500);
             }
         }
@@ -71,7 +70,7 @@ class PlaceController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.place.creation'),
-            'project' => $newPlace
+            'place' => $newPlace
         ], 200);
     }
 
@@ -98,83 +97,48 @@ class PlaceController extends Controller
     public function update(Request $request, Place $place)
     {
 
-        // $fail_message = trans('crud.fail.project.update');
+        $fail_message = trans('crud.fail.place.update');
 
-        // DB::beginTransaction();
+        DB::beginTransaction();
 
-        // # Update project
+        # Update place
 
-        // try {       
+        try {       
 
-        //     $editedPlace = tap($place)->update($request->all());
+            $editedPlace = tap($place)->update($request->all());
 
-        // } catch (\Exception $e) {
+        } catch (\Exception $e) {
 
-        //     DB::rollback();
-        //     return response()->json([
-        //         'message' => $fail_message,
-        //     ], 500);
-        // }
+            DB::rollback();
+            return response()->json([
+                'message' => $fail_message,
+            ], 500);
+        }
 
-        // # Update related image (Database + Cloudinary)
+        # Update related image (Database + Cloudinary)
 
-        // try {                
+        try {                  
 
-        //     if ($request->imageChanged) {
+            $editedPlace->updateImage($request->image);
 
-        //         // Deleting old image
+        } catch (\Exception $e) {
 
-        //         $editedPlace->deleteImageIfExists();;
+            DB::rollback();
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.image.update'),
+                "more" => $e->getMessage()
+            ], 500);
+        }
 
-        //         // Storing new image
-        //         if ($request->image) {           
+        # Success
 
-        //             $editedPlace->storeImage($request->image);
-        //         }
+        DB::commit();
 
-        //     }else{
-        //         $editedPlace->image = $request->image;
-        //     }
-
-        // } catch (\Exception $e) {
-
-        //     DB::rollback();
-        //     return response()->json([
-        //         'message' => $fail_message,
-        //         'info' => trans('crud.fail.image.update')
-        //     ], 500);
-        // }
-
-        // # Update related events
-
-        // if ($request->get('projectOnly') !== true) {
-
-        //     try {
-                
-        //         if ($events = Event::where('child_id', $place->id)) {
-        //             $events->delete();
-        //         }
-
-        //         $editedPlace->storeEvents($request->get('events'));
-
-        //     } catch (\Exception $e) {
-
-        //         DB::rollback();
-        //         return response()->json([
-        //             'message' => $fail_message,
-        //             'info' => trans('crud.fail.events.update')
-        //         ], 500);
-        //     }
-        // }
-
-        // # Success
-
-        // DB::commit();
-
-        // return response()->json([
-        //     'success' => trans('crud.success.project.update'),
-        //     'project' => $editedPlace
-        // ], 200);
+        return response()->json([
+            'success' => trans('crud.success.place.update'),
+            'place' => $editedPlace
+        ], 200);
     }
 
     /**

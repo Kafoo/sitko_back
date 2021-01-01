@@ -54,17 +54,60 @@ class Place extends Model
 
     public function storeImage($image){
 
-				// If we have a string (Blob), upload it to cloudinary
-				if (gettype($image) === "string" ) {
-					$imageModel = new Image();
-					$imageModel->cloudinary($image);
-					$this->image = $this->image()->save($imageModel);
+			// If we have a string (Blob), upload it to cloudinary
+			if (gettype($image) === "string" ) {
+				$imageModel = new Image();
+				$imageModel->cloudinary($image);
+				$this->image = $this->image()->save($imageModel);
 
-				// Else, we should already have a proper image model 
-				}else{
-					$imageModel = new Image($image);
-					$this->image = $this->image()->save($imageModel);
-				}
-
+			// Else, we should already have a proper image model 
+			}else{
+				$imageModel = new Image($image);
+				$this->image = $this->image()->save($imageModel);
+			}
     }
+
+    public function updateImage($image){
+
+			$oldImage = $this->image;
+
+			// If we have a string (Blob)
+			if (gettype($image) === "string" ) {
+
+				//Delete old image
+				if ($oldImage->public_id) {
+					Cloudinary::destroy($oldImage->public_id);
+				}
+				$oldImage->delete();
+
+				//Store new image
+				$newImage = new Image();
+				$newImage->cloudinary($image);
+				$this->image = $this->image()->save($newImage);
+
+			// Else, it should be a generic image to be updated
+
+			}else{
+
+				$newImage = new Image($image);
+				if ($oldImage->public_id === $newImage->public_id) {
+					if (!$oldImage->public_id 
+					AND $oldImage->full !== $newImage->full) {
+						//update
+						$this->image()->delete();
+						$this->image()->save($newImage);
+					}
+
+				}else{
+					//If last had a cloudinary public id, destroy it
+					if ($oldImage->public_id) {
+						Cloudinary::destroy($oldImage->public_id);
+					}
+						
+					//update
+					$this->image()->delete();
+					$this->image()->save($newImage);
+				}
+			}
+		}
 }

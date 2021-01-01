@@ -39,6 +39,14 @@ class Image extends Model
         'imageable_id'
     ];
 
+    public function hydratewesh($img)
+    {
+        $this->full = $img['full']; 
+        $this->medium = $img['medium']; 
+        $this->low_medium = $img['low_medium']; 
+        $this->thumb = $img['thumb']; 
+        $this->public_id = $img['public_id']; 
+    }
 
     public function cloudinary($img)
     {

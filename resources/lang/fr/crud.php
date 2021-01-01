@@ -37,6 +37,11 @@ return [
         'creation' => "Projet créé avec succès",
         'update' => "Projet modifié avec succès",
         'deletion' => "Projet supprimé avec succès"
+      ],
+      'place' => [
+        'creation' => "Lieu créé avec succès",
+        'update' => "Lieu modifié avec succès",
+        'deletion' => "Lieu supprimé avec succès"
       ]
     ]
 

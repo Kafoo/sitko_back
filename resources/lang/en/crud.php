@@ -37,6 +37,11 @@ return [
         'creation' => "Project has been successfully created",
         'update' => "Project has been successfully updated",
         'deletion' => "Project has been successfully delete"
+      ],
+      'place' => [
+        'creation' => "Place has been successfully created",
+        'update' => "Place has been successfully updated",
+        'deletion' => "Place has been successfully delete"
       ]
     ]
 ];
