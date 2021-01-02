@@ -146,7 +146,9 @@ class ProjectController extends Controller
 
         try {                
 
+            //If new image exists
             if ($request->image) {
+                //If old image exists
                 if ($editedProject->image){
                     $editedProject->image->change($request->image);
                 }else{
