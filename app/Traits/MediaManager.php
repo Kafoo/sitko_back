@@ -11,14 +11,14 @@ trait MediaManager {
 
 		// If we have a string (Blob), upload it to cloudinary
 		if (gettype($image) === "string" ) {
-			$this->image = new Image();
-			$this->image->upload($image);
-			$this->image()->save($this->image);
+			$imageModel = new Image();
+			$imageModel->upload($image);
+			$this->image = $this->image()->save($imageModel);
 
 		// Else, we should already have a proper image model 
 		}else{
-			$this->image = new Image($image);
-			$this->image()->save($this->image);
+			$imageModel = new Image($image);
+			$this->image = $this->image()->save($imageModel);
 		}
 	}
  
@@ -30,7 +30,6 @@ trait MediaManager {
 				Cloudinary::destroy($this->image->public_id);
 			}
 			$this->image()->delete();
-      $this->image = null;
 		}
 	}
 
