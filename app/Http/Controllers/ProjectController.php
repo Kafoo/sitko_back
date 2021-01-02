@@ -147,7 +147,11 @@ class ProjectController extends Controller
         try {                
 
             if ($request->image) {
-                $editedProject->image->change($request->image);
+                if ($editedProject->image){
+                    $editedProject->image->change($request->image);
+                }else{
+                    $editedProject->storeImage($request->image);
+                }
             }else{
                 $editedProject->deleteImage();
             }
