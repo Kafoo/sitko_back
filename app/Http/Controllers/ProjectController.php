@@ -150,7 +150,7 @@ class ProjectController extends Controller
 
                 // Deleting old image
 
-                $editedProject->deleteImageIfExists();;
+                $editedProject->deleteImage();;
 
                 // Storing new image
                 if ($request->image) {           
@@ -238,7 +238,7 @@ class ProjectController extends Controller
 
         try {
             
-            $project->deleteImageIfExists();
+            $project->deleteImage();
 
         } catch (\Exception $e) {
             
