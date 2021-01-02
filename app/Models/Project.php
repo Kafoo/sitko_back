@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Event;
 use App\Traits\MediaManager;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Models\Image;
 
 
 class Project extends Model
