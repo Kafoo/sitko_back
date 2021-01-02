@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Event;
+use App\Models\Image;
 use App\Traits\MediaManager;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class Project extends Model
 {
