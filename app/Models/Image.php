@@ -48,11 +48,9 @@ class Image extends Model
 			if ($this->public_id) {
 				Cloudinary::destroy($this->public_id);
 			}
-			$this->delete();
 
 			//Store new image
-			$this->cloudinary($newImage);
-
+            $this->update($this->cloudinary($newImage));
 
 		//Else, generic image or same image
 		}else{
@@ -75,14 +73,22 @@ class Image extends Model
 
         $cloudinary_response = Cloudinary::upload($img);
 
-        $this->full = $cloudinary_response->getSecurePath();
+        $full = $cloudinary_response->getSecurePath();
 
-        $parts = explode('upload/', $this->full);
+        $parts = explode('upload/', $full);
 
-        $this->medium = $parts[0].'upload/t_medium/'.$parts[1];
-        $this->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
-        $this->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-        $this->public_id = $cloudinary_response->getPublicId();
+        $medium = $parts[0].'upload/t_medium/'.$parts[1];
+        $low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
+        $thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+        $public_id = $cloudinary_response->getPublicId();
+
+        return [
+            'full' => $full,
+            'medium' => $medium,
+            'low_medium' => $low_medium,
+            'thumb' => $thumb,
+            'public_id' => $public_id,
+        ];
 
     }
 
