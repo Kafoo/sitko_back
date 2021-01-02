@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Event;
-use App\Models\Image;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Traits\MediaManager;
 
 class Project extends Model
 {
     use HasFactory;
+    use MediaManager;
 
     /**
      * The attributes that are mass assignable.
@@ -63,23 +63,4 @@ class Project extends Model
         $this->events = $this->events()->saveMany($newEvents);
     }
 
-
-    public function storeImage($image){
-
-        $imageModel = new Image();
-        $imageModel->cloudinary($image);
-        $this->image = $this->image()->save($imageModel);
-    }
-
-
-    public function deleteImageIfExists(){
-
-        $image = Image::where('imageable_id', $this->id);
-
-        if (count($image->get()) > 0) {
-
-            Cloudinary::destroy($image->get()[0]->public_id);
-            $image->delete();
-        }
-    }
 }

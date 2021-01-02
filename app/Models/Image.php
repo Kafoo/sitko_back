@@ -69,6 +69,7 @@ class Image extends Model
 		}
     }
 
+
     public function upload($img)
     {
 

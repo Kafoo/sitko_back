@@ -50,7 +50,7 @@ class PlaceController extends Controller
 
         if ($request->image !== null) {
 
-            try {                
+            try {
 
                 $newPlace->storeImage($request->image);
 

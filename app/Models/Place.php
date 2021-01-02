@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Image;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Traits\MediaManager;
+
 
 class Place extends Model
 {
 	use HasFactory;
+	use MediaManager;
 
 	/**
 		* The attributes that are mass assignable.
@@ -50,33 +51,6 @@ class Place extends Model
 	public function tags()
 	{
 			return $this->morphMany('App\Models\Tag', 'tagable');
-	}
-
-	public function storeImage($image){
-
-		// If we have a string (Blob), upload it to cloudinary
-		if (gettype($image) === "string" ) {
-			$this->image = $this->image->cloudinary($image)->save();
-
-		// Else, we should already have a proper image model 
-		}else{
-			$imageModel = new Image($image);
-			$this->image = $this->image()->save($imageModel);
-		}
-	}
-
-
-	public function deleteImage(){
-
-		$image = Image::where('imageable_id', $this->id)->get()[0];
-
-		if (count($image->get()) > 0) {
-
-			if ($image->public_id) {
-				Cloudinary::destroy($image->public_id);
-			}
-			$image->delete();
-		}
 	}
 
 }
