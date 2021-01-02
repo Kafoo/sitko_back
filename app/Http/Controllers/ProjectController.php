@@ -167,7 +167,8 @@ class ProjectController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => $fail_message,
-                'info' => trans('crud.fail.image.update')
+                'info' => trans('crud.fail.image.update'),
+                'more' => $e->getMessage()
             ], 500);
         }
 

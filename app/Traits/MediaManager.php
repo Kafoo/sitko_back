@@ -24,14 +24,12 @@ trait MediaManager {
  
 	public function deleteImage(){
 
-		$image = Image::where('imageable_id', $this->id)->get()[0];
+		if ($this->image) { 
 
-		if (count($image->get()) > 0) {
-
-			if ($image->public_id) {
-				Cloudinary::destroy($image->public_id);
+			if ($this->image->public_id) {
+				Cloudinary::destroy($this->image->public_id);
 			}
-			$image->delete();
+			$this->image()->delete();
 		}
 	}
 
