@@ -146,21 +146,7 @@ class ProjectController extends Controller
 
         try {                
 
-            if ($request->imageChanged) {
-
-                // Deleting old image
-
-                $editedProject->deleteImage();;
-
-                // Storing new image
-                if ($request->image) {           
-
-                    $editedProject->storeImage($request->image);
-                }
-
-            }else{
-                $editedProject->image = $request->image;
-            }
+            $editedProject->image->change($request->image);
 
         } catch (\Exception $e) {
 
