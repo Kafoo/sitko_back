@@ -57,8 +57,7 @@ class Place extends Model
 		// If we have a string (Blob), upload it to cloudinary
 		if (gettype($image) === "string" ) {
 			$imageModel = new Image();
-			$imageModel->cloudinary($image);
-			$this->image = $this->image()->save($imageModel);
+			$this->image = $this->image()->save($imageModel->cloudinary($image));
 
 		// Else, we should already have a proper image model 
 		}else{
@@ -67,42 +66,6 @@ class Place extends Model
 		}
 	}
 
-	public function updateImage($image){
-
-		$oldImage = $this->image;
-
-		// If we have a string (Blob)
-		if (gettype($image) === "string" ) {
-
-			//Delete old image
-			if ($oldImage->public_id) {
-				Cloudinary::destroy($oldImage->public_id);
-			}
-			$oldImage->delete();
-
-			//Store new image
-			$newImage = new Image();
-			$newImage->cloudinary($image);
-			$this->image = $this->image()->save($newImage);
-
-		//Else, generic image or same image
-		}else{
-
-			$newImage = new Image($image);
-			
-			if ($oldImage->full !== $newImage->full) {
-
-				if ($oldImage->public_id) {
-					Cloudinary::destroy($oldImage->public_id);
-				}
-
-				$this->image()->delete();
-				$this->image()->save($newImage);
-			}else{
-				// Same images, do nothing
-			}
-		}
-	}
 
 	public function deleteImage(){
 

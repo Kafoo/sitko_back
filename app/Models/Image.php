@@ -49,8 +49,8 @@ class Image extends Model
 				Cloudinary::destroy($this->public_id);
 			}
 
-			//Store new image
-            $this->update($this->cloudinary($newImage));
+			//Upload and store new image
+            $this->update($this->upload($newImage));
 
 		//Else, generic image or same image
 		}else{
@@ -68,7 +68,7 @@ class Image extends Model
 		}
     }
 
-    public function cloudinary($img)
+    public function upload($img)
     {
 
         $cloudinary_response = Cloudinary::upload($img);
