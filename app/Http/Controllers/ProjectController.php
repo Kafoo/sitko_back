@@ -146,7 +146,11 @@ class ProjectController extends Controller
 
         try {                
 
-            $editedProject->image->change($request->image);
+            if ($request->image) {
+                $editedProject->image->change($request->image);
+            }else{
+                $editedProject->deleteImage();
+            }
 
         } catch (\Exception $e) {
 
