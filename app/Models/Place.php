@@ -56,8 +56,7 @@ class Place extends Model
 
 		// If we have a string (Blob), upload it to cloudinary
 		if (gettype($image) === "string" ) {
-			$imageModel = new Image();
-			$this->image = $this->image()->save($imageModel->cloudinary($image));
+			$this->image = $this->image()->cloudinary($image)->save();
 
 		// Else, we should already have a proper image model 
 		}else{

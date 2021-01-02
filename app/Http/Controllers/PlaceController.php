@@ -59,7 +59,8 @@ class PlaceController extends Controller
                 DB::rollback();
                 return response()->json([
                     'message' => $fail_message,
-                    'info' => trans('crud.fail.image.creation')
+                    'info' => trans('crud.fail.image.creation'),
+                    'more' => $e->getMessage()
                 ], 500);
             }
         }
