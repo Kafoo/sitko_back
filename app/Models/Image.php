@@ -39,13 +39,35 @@ class Image extends Model
         'imageable_id'
     ];
 
-    public function hydratewesh($img)
-    {
-        $this->full = $img['full']; 
-        $this->medium = $img['medium']; 
-        $this->low_medium = $img['low_medium']; 
-        $this->thumb = $img['thumb']; 
-        $this->public_id = $img['public_id']; 
+    public function change($newImage){
+
+		// If we have a string (Blob)
+		if (gettype($newImage) === "string" ) {
+
+			//Delete old image
+			if ($this->public_id) {
+				Cloudinary::destroy($this->public_id);
+			}
+			$this->delete();
+
+			//Store new image
+			$this->cloudinary($newImage);
+
+
+		//Else, generic image or same image
+		}else{
+			
+			if ($this->full !== $newImage['full']) {
+
+				if ($this->public_id) {
+					Cloudinary::destroy($this->public_id);
+				}
+
+				 $this->update($newImage);
+			}else{
+				// Same images, do nothing
+			}
+		}
     }
 
     public function cloudinary($img)

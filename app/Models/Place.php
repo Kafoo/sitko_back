@@ -9,105 +9,112 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class Place extends Model
 {
-    use HasFactory;
+	use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-    	'name',
-    	'description'
-    ];
+	/**
+		* The attributes that are mass assignable.
+		*
+		* @var array
+		*/
+	protected $fillable = [
+		'name',
+		'description'
+	];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
+	/**
+		* The attributes that should be hidden for arrays.
+		*
+		* @var array
+		*/
+	protected $hidden = [
+			'created_at',
+			'updated_at'
+	];
 
 
-		public function projects()
-		{
-		    return $this->hasMany('App\Models\Project');
+	public function projects()
+	{
+			return $this->hasMany('App\Models\Project');
+	}
+
+	public function events()
+	{
+			return $this->hasMany('App\Models\Event');
+	}
+
+	public function image()
+	{
+			return $this->morphOne('App\Models\Image', 'imageable');
+	}
+
+	public function tags()
+	{
+			return $this->morphMany('App\Models\Tag', 'tagable');
+	}
+
+	public function storeImage($image){
+
+		// If we have a string (Blob), upload it to cloudinary
+		if (gettype($image) === "string" ) {
+			$imageModel = new Image();
+			$imageModel->cloudinary($image);
+			$this->image = $this->image()->save($imageModel);
+
+		// Else, we should already have a proper image model 
+		}else{
+			$imageModel = new Image($image);
+			$this->image = $this->image()->save($imageModel);
 		}
+	}
 
-		public function events()
-		{
-		    return $this->hasMany('App\Models\Event');
-		}
+	public function updateImage($image){
 
-		public function image()
-		{
-		    return $this->morphOne('App\Models\Image', 'imageable');
-		}
+		$oldImage = $this->image;
 
-		public function tags()
-		{
-		    return $this->morphMany('App\Models\Tag', 'tagable');
-		}
+		// If we have a string (Blob)
+		if (gettype($image) === "string" ) {
 
-    public function storeImage($image){
-
-			// If we have a string (Blob), upload it to cloudinary
-			if (gettype($image) === "string" ) {
-				$imageModel = new Image();
-				$imageModel->cloudinary($image);
-				$this->image = $this->image()->save($imageModel);
-
-			// Else, we should already have a proper image model 
-			}else{
-				$imageModel = new Image($image);
-				$this->image = $this->image()->save($imageModel);
+			//Delete old image
+			if ($oldImage->public_id) {
+				Cloudinary::destroy($oldImage->public_id);
 			}
-    }
+			$oldImage->delete();
 
-    public function updateImage($image){
+			//Store new image
+			$newImage = new Image();
+			$newImage->cloudinary($image);
+			$this->image = $this->image()->save($newImage);
 
-			$oldImage = $this->image;
+		//Else, generic image or same image
+		}else{
 
-			// If we have a string (Blob)
-			if (gettype($image) === "string" ) {
+			$newImage = new Image($image);
+			
+			if ($oldImage->full !== $newImage->full) {
 
-				//Delete old image
 				if ($oldImage->public_id) {
 					Cloudinary::destroy($oldImage->public_id);
 				}
-				$oldImage->delete();
 
-				//Store new image
-				$newImage = new Image();
-				$newImage->cloudinary($image);
-				$this->image = $this->image()->save($newImage);
-
-			// Else, it should be a generic image to be updated
-
+				$this->image()->delete();
+				$this->image()->save($newImage);
 			}else{
-
-				$newImage = new Image($image);
-				if ($oldImage->public_id === $newImage->public_id) {
-					if (!$oldImage->public_id 
-					AND $oldImage->full !== $newImage->full) {
-						//update
-						$this->image()->delete();
-						$this->image()->save($newImage);
-					}
-
-				}else{
-					//If last had a cloudinary public id, destroy it
-					if ($oldImage->public_id) {
-						Cloudinary::destroy($oldImage->public_id);
-					}
-						
-					//update
-					$this->image()->delete();
-					$this->image()->save($newImage);
-				}
+				// Same images, do nothing
 			}
 		}
+	}
+
+	public function deleteImage(){
+
+		$image = Image::where('imageable_id', $this->id)->get()[0];
+
+		if (count($image->get()) > 0) {
+
+			if ($image->public_id) {
+				Cloudinary::destroy($image->public_id);
+			}
+			$image->delete();
+		}
+	}
+
 }

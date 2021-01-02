@@ -119,7 +119,7 @@ class PlaceController extends Controller
 
         try {                  
 
-            $editedPlace->updateImage($request->image);
+            $editedPlace->image->change($request->image);
 
         } catch (\Exception $e) {
 
@@ -149,6 +149,48 @@ class PlaceController extends Controller
      */
     public function destroy(Place $place)
     {
-        //
+
+        $fail_message = trans('crud.fail.place.deletion');
+
+        DB::beginTransaction();
+
+        # Delete related image (Database + Cloudinary)
+
+        try {
+            
+            $place->deleteImage();
+
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            return response()->json([
+                'message' => $fail_message,
+                'info' => trans('crud.fail.image.deletion'),
+                'more' => $e->getMessage()
+            ], 500);
+        }
+
+        # Delete place
+
+        try {
+            
+            $place->delete();
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            return response()->json([
+                'message' => $fail_message
+            ], 500);
+        }
+
+        # Success
+
+        DB::commit();
+
+        return response()->json([
+            'success' => trans('crud.success.place.deletion'),
+        ], 200);
+
     }
 }

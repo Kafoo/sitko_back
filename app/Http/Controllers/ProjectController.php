@@ -30,7 +30,6 @@ class ProjectController extends Controller
         }
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -57,6 +56,7 @@ class ProjectController extends Controller
                 'message' => $fail_message,
             ], 500);
         }
+
 
         #  Creating related events
 
