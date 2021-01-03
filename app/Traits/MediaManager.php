@@ -25,10 +25,16 @@ trait MediaManager {
  
 	public function deleteImage(){
 
-    if ($this->image->public_id) {
-      Cloudinary::destroy($this->image->public_id);
+    $image = Image::where('imageable_id', $this->id); 
+    $public_id = $image->get()[0]->public_id;
+
+    if (count($image->get()) > 0) {
+
+      if($public_id){
+        Cloudinary::destroy($public_id);
+      }
+      $this->image()->delete();
     }
-    $this->image()->delete();
 
 	}
 

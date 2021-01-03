@@ -158,9 +158,8 @@ class ProjectController extends Controller
                     $editedProject->storeImage($request->image);
                 }
             }else{
-                if ($hadImage){
-                    $editedProject->deleteImage();
-                }
+
+                $editedProject->deleteImage();
             }
             
 
@@ -241,10 +240,7 @@ class ProjectController extends Controller
 
         try {
             
-            if(Image::where('imageable_id', $project->id)->count() > 0){
-                $project->deleteImage();
-            }
-
+            $project->deleteImage();
 
         } catch (\Exception $e) {
             
