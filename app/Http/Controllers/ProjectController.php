@@ -7,6 +7,7 @@ use App\Models\Place;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Image;
 
 class ProjectController extends Controller
 {
@@ -145,20 +146,23 @@ class ProjectController extends Controller
         # Update related image (Database + Cloudinary)
 
         try {                
-            //If new image exists
 
-            if ($request->image !== null) {
+            $hadImage = Image::where('imageable_id', $editedProject->id)->count() > 0;
+
+            //If new image exists
+            if ($request->image) {
                 //If old image exists
-                if ($editedProject->image !== null){
+                if ($hadImage){
                     $editedProject->image->change($request->image);
                 }else{
                     $editedProject->storeImage($request->image);
                 }
             }else{
-                if ($editedProject->image !== null){
+                if ($hadImage){
                     $editedProject->deleteImage();
                 }
             }
+            
 
         } catch (\Exception $e) {
 
@@ -190,12 +194,12 @@ class ProjectController extends Controller
                     'info' => trans('crud.fail.events.update')
                 ], 500);
             }
+            
         }
 
         # Success
 
         DB::commit();
-
         return response()->json([
             'success' => trans('crud.success.project.update'),
             'project' => $editedProject
