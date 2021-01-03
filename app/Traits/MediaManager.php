@@ -2,6 +2,7 @@
  
 namespace App\Traits;
  
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Image;
 
 trait MediaManager {
@@ -31,7 +32,6 @@ trait MediaManager {
 			}
 			$this->image()->delete();
 		}
-
 	}
 
 }
