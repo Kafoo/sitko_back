@@ -20,7 +20,6 @@ trait MediaManager {
 			$imageModel = new Image($image);
 			$this->image = $this->image()->save($imageModel);
 		}
-    print_r($this);
 	}
  
 	public function deleteImage(){
@@ -31,8 +30,7 @@ trait MediaManager {
 				Cloudinary::destroy($this->image->public_id);
 			}
 			$this->image()->delete();
-      print_r($this);
+
 		}
 	}
-
 }
