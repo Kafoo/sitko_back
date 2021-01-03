@@ -155,8 +155,8 @@ class ProjectController extends Controller
                 }
             }else{
                 $editedProject->deleteImage();
-                var_dump($editedProject);
             }
+            print_r($editedProject);
 
         } catch (\Exception $e) {
 
