@@ -4,6 +4,7 @@ namespace App\Traits;
  
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Image;
+use Mockery\Undefined;
 
 trait MediaManager {
  
@@ -20,17 +21,18 @@ trait MediaManager {
 			$imageModel = new Image($image);
 			$this->image = $this->image()->save($imageModel);
 		}
+
 	}
  
 	public function deleteImage(){
 
-		if ($this->image) { 
+		if ($this->image()) {
 
 			if ($this->image->public_id) {
 				Cloudinary::destroy($this->image->public_id);
 			}
 			$this->image()->delete();
-
 		}
 	}
+
 }

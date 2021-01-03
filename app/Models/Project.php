@@ -64,6 +64,4 @@ class Project extends Model
         $this->events = $this->events()->saveMany($newEvents);
     }
 
-
-
 }

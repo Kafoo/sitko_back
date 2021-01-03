@@ -146,17 +146,19 @@ class ProjectController extends Controller
 
         try {                
             //If new image exists
-            if ($request->image) {
+
+            if ($request->image !== null) {
                 //If old image exists
-                if ($editedProject->image){
+                if ($editedProject->image !== null){
                     $editedProject->image->change($request->image);
                 }else{
                     $editedProject->storeImage($request->image);
                 }
             }else{
-                $editedProject->deleteImage();
+                if ($editedProject->image !== null){
+                    $editedProject->deleteImage();
+                }
             }
-            print_r($editedProject);
 
         } catch (\Exception $e) {
 
