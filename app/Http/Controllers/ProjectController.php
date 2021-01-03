@@ -241,7 +241,10 @@ class ProjectController extends Controller
 
         try {
             
-            $project->deleteImage();
+            if(Image::where('imageable_id', $project->id)->count() > 0){
+                $project->deleteImage();
+            }
+
 
         } catch (\Exception $e) {
             

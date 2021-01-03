@@ -25,13 +25,11 @@ trait MediaManager {
  
 	public function deleteImage(){
 
-		if ($this->image()) {
+    if ($this->image->public_id) {
+      Cloudinary::destroy($this->image->public_id);
+    }
+    $this->image()->delete();
 
-			if ($this->image->public_id) {
-				Cloudinary::destroy($this->image->public_id);
-			}
-			$this->image()->delete();
-		}
 	}
 
 }
