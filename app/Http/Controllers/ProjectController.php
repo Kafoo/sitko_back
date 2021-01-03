@@ -145,7 +145,6 @@ class ProjectController extends Controller
         # Update related image (Database + Cloudinary)
 
         try {                
-
             //If new image exists
             if ($request->image) {
                 //If old image exists
@@ -156,6 +155,7 @@ class ProjectController extends Controller
                 }
             }else{
                 $editedProject->deleteImage();
+                var_dump($editedProject);
             }
 
         } catch (\Exception $e) {

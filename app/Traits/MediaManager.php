@@ -31,6 +31,7 @@ trait MediaManager {
 			}
 			$this->image()->delete();
 		}
+    var_dump($this);
 	}
 
 }
