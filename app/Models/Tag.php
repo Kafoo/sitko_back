@@ -9,14 +9,30 @@ class Tag extends Model
 {
     use HasFactory;
 
-    public function tagType()
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+    	'title',
+    	'custom',
+    ];
+
+    /**
+     * Get all of the posts that are assigned this tag.
+     */
+    public function place()
     {
-        return $this->belongsTo('App\Models\TagType');
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
     }
 
-    public function tagable()
+    /**
+     * Get all of the videos that are assigned this tag.
+     */
+    public function user()
     {
-        return $this->morphTo();
+        return $this->morphedByMany('App\Models\User', 'taggable')->withTimestamps();;
     }
 
 }

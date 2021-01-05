@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Place;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return Place::with('image')->get();
+        return Place::with(['image', 'tags', 'projects'])->get();
     }
 
     /**
@@ -30,6 +31,7 @@ class PlaceController extends Controller
        $fail_message = trans('crud.fail.place.creation');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Creating Place
 
@@ -38,12 +40,8 @@ class PlaceController extends Controller
             $newPlace = Place::create($request->all());
 
         } catch (\Exception $e) {
-            
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'more' => $e->getMessage()
-            ], 500);
+
+            return $this->returnOrThrow($e, $fail_message);
         }
         
         # Uploading image to Cloudinary
@@ -56,14 +54,36 @@ class PlaceController extends Controller
 
             } catch (\Exception $e) {
 
-                DB::rollback();
-                return response()->json([
-                    'message' => $fail_message,
-                    'info' => trans('crud.fail.image.creation'),
-                    'more' => $e->getMessage()
-                ], 500);
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
             }
         }
+
+        # Link/Create Tags
+
+
+        try {
+
+            $newTags = [];
+
+            foreach ($request->tags as $tag) {
+
+                if (isset($tag['id'])) {
+                    $newTags[] = $tag['id'];
+                }else{
+                    $tagModel = new Tag($tag);
+                    $tagModel->save();
+                    $newTags[] = $tagModel->id;
+                }
+            }
+
+            $newPlace->tags = $newPlace->tags()->sync($newTags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.creation'));
+        }
+
+
 
         # Success
 
@@ -85,7 +105,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        return Place::with('image')->find($placeId);
+        return Place::with(['image', 'tags'])->find($placeId);
     }
 
     /**
@@ -101,6 +121,7 @@ class PlaceController extends Controller
         $fail_message = trans('crud.fail.place.update');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Update place
 
@@ -110,10 +131,7 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message);
         }
 
         # Update related image (Database + Cloudinary)
@@ -124,12 +142,57 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.image.update'),
-                "more" => $e->getMessage()
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
+        }
+
+        # Update related tags
+
+        try {                  
+
+            $newTags = [];
+        
+            foreach ($request->tags as $tag) {
+                $isNew = true;
+                foreach ($editedPlace->tags as $oldTag) {
+                    if ($tag == $oldTag){
+                        $isNew = false;
+                    }
+                }
+
+                if ($isNew) {
+                    if (isset($tag['id'])) {
+                        $newTags[] = $tag['id'];
+                    }else{
+                        $tagModel = new Tag($tag);
+                        $tagModel->save();
+                        $newTags[] = $tagModel->id;
+                    }
+                }
+            }
+
+            foreach($editedPlace->tags as $tag){
+                $isUnused = true;
+                foreach($request->tags as $newTag){
+                    if ($tag == $newTag){
+                        $isUnused = false;
+                    }
+                }
+
+                if ($isUnused) {
+                    if ($tag->custom == '1') {
+                        $tag->delete();
+                    }
+                }else{
+                    $newTags[] = $tag->id;
+                }
+            }
+
+            $editedPlace->tags()->sync($newTags);
+            $editedPlace->load('tags');
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
         }
 
         # Success
@@ -154,6 +217,7 @@ class PlaceController extends Controller
         $fail_message = trans('crud.fail.place.deletion');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Delete related image (Database + Cloudinary)
 
@@ -162,14 +226,43 @@ class PlaceController extends Controller
             $place->deleteImage();
 
         } catch (\Exception $e) {
-            
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.image.deletion'),
-                'more' => $e->getMessage()
-            ], 500);
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
         }
+
+        # Delete related projects
+
+        try {
+
+			$controller = new ProjectController;
+			foreach ($place->projects as $project) {
+				$controller->destroy($project);
+			}
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.projects.deletion'));
+
+        }
+
+
+        # Delete related tags
+
+        try {
+
+			foreach ($place->tags as $tag) {
+                if ($tag->custom == '1') {
+    				$tag->delete();
+                }
+			}
+
+            $place->tags()->detach();
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
+
+        } 
 
         # Delete place
 
@@ -179,10 +272,7 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message);
         }
 
         # Success

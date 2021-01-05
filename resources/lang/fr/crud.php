@@ -15,6 +15,11 @@ return [
         'update' => "Erreur lors de la modification du projet",
         'deletion' => "Erreur lors de la suppression du projet"
       ],
+      'projects' => [
+        'creation' => "Les projets n'ont pas pu être créés",
+        'update' => "Les projets n'ont pas pu être modifiés",
+        'deletion' => "Les projets n'ont pas pu être supprimés"
+      ],
       'place' => [
         'creation' => "Erreur lors de la création du lieu",
         'update' => "Erreur lors de la modification du lieu",
@@ -24,6 +29,11 @@ return [
         'creation' => "Les événements n'ont pas pu être créés",
         'update' => "Les événements n'ont pas pu être modifiés",
         'deletion' => "Les événements n'ont pas pu être supprimés"
+      ],
+      'tags' => [
+        'creation' => "Les tags n'ont pas pu être créés",
+        'update' => "Les tags n'ont pas pu être modifiés",
+        'deletion' => "Les tags n'ont pas pu être supprimés"
       ],
       'image' => [
         'creation' => "L'image n'a pas pu être téléchargée",

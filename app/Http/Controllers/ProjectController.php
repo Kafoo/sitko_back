@@ -43,6 +43,7 @@ class ProjectController extends Controller
        $fail_message = trans('crud.fail.project.creation');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Creating Project
 
@@ -51,11 +52,8 @@ class ProjectController extends Controller
             $newProject = Project::create($request->all());
 
         } catch (\Exception $e) {
-            
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-            ], 500);
+
+            return $this->returnOrThrow($e, $fail_message);
         }
 
 
@@ -67,11 +65,7 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.events.creation')
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.creation'));
         }
         
         # Uploading image to Cloudinary
@@ -84,11 +78,7 @@ class ProjectController extends Controller
 
             } catch (\Exception $e) {
 
-                DB::rollback();
-                return response()->json([
-                    'message' => $fail_message,
-                    'info' => trans('crud.fail.image.creation')
-                ], 500);
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
             }
         }
 
@@ -128,6 +118,7 @@ class ProjectController extends Controller
         $fail_message = trans('crud.fail.project.update');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Update project
 
@@ -137,12 +128,9 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message);
         }
-
+        
         # Update related image (Database + Cloudinary)
 
         try {                
@@ -165,12 +153,7 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.image.update'),
-                'more' => $e->getMessage()
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
         }
 
         # Update related events
@@ -187,11 +170,7 @@ class ProjectController extends Controller
 
             } catch (\Exception $e) {
 
-                DB::rollback();
-                return response()->json([
-                    'message' => $fail_message,
-                    'info' => trans('crud.fail.events.update')
-                ], 500);
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.update'));
             }
             
         }
@@ -218,6 +197,7 @@ class ProjectController extends Controller
         $fail_message = trans('crud.fail.project.deletion');
 
         DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
 
         # Delete related events
 
@@ -229,11 +209,8 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
             
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.events.deletion')
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.deletion'));
+
         }
 
         # Delete related image (Database + Cloudinary)
@@ -244,11 +221,8 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
             
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message,
-                'info' => trans('crud.fail.image.deletion')
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
+
         }
 
         # Delete project
@@ -259,10 +233,7 @@ class ProjectController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
-            return response()->json([
-                'message' => $fail_message
-            ], 500);
+            return $this->returnOrThrow($e, $fail_message);
         }
 
         # Success

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\ProjectController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\MediaManager;
@@ -34,17 +33,6 @@ class Place extends Model
 	];
 
 
-
-	public function delete() {
-			
-			$controller = new ProjectController;
-			foreach ($this->projects as $project) {
-				$controller->destroy($project);
-			}
-
-			return parent::delete();
-	}
-
 	public function projects()
 	{
 			return $this->hasMany('App\Models\Project');
@@ -62,7 +50,7 @@ class Place extends Model
 
 	public function tags()
 	{
-			return $this->morphMany('App\Models\Tag', 'tagable');
+			return $this->morphToMany('App\Models\Tag', 'taggable');
 	}
 
 }

@@ -15,10 +15,20 @@ return [
         'update' => "Project could not be updated",
         'deletion' => "Project could not be deleted"
       ],
+      'projects' => [
+        'creation' => "Projects creation failed",
+        'update' => "Projects update failed",
+        'deletion' => "Projects deletion failed"
+      ],
       'place' => [
         'creation' => "Place could not be created",
         'update' => "Place could not be updated",
         'deletion' => "Place could not be deleted"
+      ],
+      'tags' => [
+        'creation' => "Tags could not be created",
+        'update' => "Tags could not be updated",
+        'deletion' => "Tags could not be deleted"
       ],
       'events' => [
         'creation' => "Events creation failed",

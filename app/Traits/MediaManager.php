@@ -5,6 +5,8 @@ namespace App\Traits;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Image;
 
+use function PHPUnit\Framework\throwException;
+
 trait MediaManager {
  
 	public function storeImage($image){
@@ -24,7 +26,7 @@ trait MediaManager {
 	}
  
 	public function deleteImage(){
-
+		
     $image = Image::where('imageable_id', $this->id); 
 
     if (count($image->get()) > 0) {
