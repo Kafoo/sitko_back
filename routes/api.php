@@ -20,13 +20,17 @@ Route::middleware('auth:api')->group(function(){
 
 	Route::apiResource('tag', 'App\Http\Controllers\TagController');
 
-	Route::apiResource('event', 'App\Http\Controllers\EventController');
+	Route::apiResource('caldate', 'App\Http\Controllers\CaldateController');
 
-	Route::apiResource('place.event', 'App\Http\Controllers\EventController');
+	Route::apiResource('place.caldate', 'App\Http\Controllers\CaldateController');
 
 	Route::apiResource('project', 'App\Http\Controllers\ProjectController');
 
 	Route::apiResource('place.project', 'App\Http\Controllers\ProjectController');
+
+	Route::apiResource('event', 'App\Http\Controllers\EventController');
+
+	Route::apiResource('place.event', 'App\Http\Controllers\EventController');
 
     Route::apiResource('user', 'App\Http\Controllers\UserController');
 

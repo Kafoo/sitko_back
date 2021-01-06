@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Caldate;
+use App\Traits\MediaManager;
+
 
 class Event extends Model
 {
     use HasFactory;
+    use MediaManager;
 
     /**
      * The attributes that are mass assignable.
@@ -15,12 +19,9 @@ class Event extends Model
      * @var array
      */
     protected $fillable = [
+    	'title',
     	'type',
-    	'start',
-    	'end',
-    	'timed',
-        'child_id',
-        'child_type',
+    	'description',
         'place_id'
     ];
 
@@ -39,13 +40,29 @@ class Event extends Model
         return $this->belongsTo('App\Models\Place');
     }
 
-	public function type($type){
-		$this->type = $type;
-	}
-
-    public function child()
+    public function caldates()
     {
-        return $this->morphTo();
+        return $this->morphMany('App\Models\Caldate', 'child');
     }
+
+    public function image()
+    {
+        return $this->morphOne('App\Models\Image', 'imageable');
+    }
+
+
+    public function storeCaldates($caldates){
+
+        $newCaldates = [];
+
+        foreach ($caldates as $caldate) {
+            $caldateModel = new Caldate($caldate);
+            $caldateModel->type('event');
+            $newCaldates[] = $caldateModel;
+        }
+
+        $this->caldates = $this->caldates()->saveMany($newCaldates);
+    }
+
 
 }

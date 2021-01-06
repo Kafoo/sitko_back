@@ -30,6 +30,11 @@ return [
         'update' => "Les événements n'ont pas pu être modifiés",
         'deletion' => "Les événements n'ont pas pu être supprimés"
       ],
+      'caldates' => [
+        'creation' => "Les date n'ont pas pu être créés dans l'agenda",
+        'update' => "Les date n'ont pas pu être modifiés dans l'agenda",
+        'deletion' => "Les date n'ont pas pu être supprimés dans l'agenda"
+      ],
       'tags' => [
         'creation' => "Les tags n'ont pas pu être créés",
         'update' => "Les tags n'ont pas pu être modifiés",

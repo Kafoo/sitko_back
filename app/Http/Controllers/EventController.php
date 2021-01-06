@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Place;
+use App\Models\Caldate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Image;
 
 class EventController extends Controller
 {
@@ -19,14 +22,13 @@ class EventController extends Controller
         #Index by place
 
         if ($place_id) {
-            return Place::find($place_id)->events()->with(['child'])->get();
+            return Place::find($place_id)->events()->with(['caldates', 'image'])->get();
 
         # Index all
 
         }else{
-            return Event::with('child')->get();
+            return Event::with(['caldates', 'image'])->get();
         }
-
     }
 
     /**
@@ -37,8 +39,59 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+       $fail_message = trans('crud.fail.event.creation');
+
+        DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
+
+        # Creating Event
+
+        try {
+
+            $newEvent = Event::create($request->all());
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message);
+        }
+
+
+        #  Creating related caldates
+
+        try {
+
+            $newEvent->storeCaldates($request->get('caldates'));
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.creation'));
+        }
+        
+        # Uploading image to Cloudinary
+
+        if ($request->image !== null) {
+
+            try {                
+
+                $newEvent->storeImage($request->image);
+
+            } catch (\Exception $e) {
+
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
+            }
+        }
+
+        # Success
+
+        DB::commit();
+
+        return response()->json([
+            'success' => trans('crud.success.event.creation'),
+            'event' => $newEvent
+        ], 200);
     }
+
 
     /**
      * Display the specified resource.
@@ -48,8 +101,9 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        //
+        return $event;
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -60,8 +114,76 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        //
+
+        $fail_message = trans('crud.fail.event.update');
+
+        DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
+
+        # Update event
+
+        try {       
+
+            $editedEvent = tap($event)->update($request->all());
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message);
+        }
+        
+        # Update related image (Database + Cloudinary)
+
+        try {                
+
+            $hadImage = Image::where('imageable_id', $editedEvent->id)->count() > 0;
+
+            //If new image exists
+            if ($request->image) {
+                //If old image exists
+                if ($hadImage){
+                    $editedEvent->image->change($request->image);
+                }else{
+                    $editedEvent->storeImage($request->image);
+                }
+            }else{
+
+                $editedEvent->deleteImage();
+            }
+            
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
+        }
+
+        # Update related caldates
+
+        if ($request->get('eventOnly') !== true) {
+
+            try {
+                
+                if ($caldates = Caldate::where('child_id', $event->id)) {
+                    $caldates->delete();
+                }
+
+                $editedEvent->storeCaldates($request->get('caldates'));
+
+            } catch (\Exception $e) {
+
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.update'));
+            }
+            
+        }
+
+        # Success
+
+        DB::commit();
+        return response()->json([
+            'success' => trans('crud.success.event.update'),
+            'event' => $editedEvent
+        ], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -71,7 +193,57 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        //
+
+        $fail_message = trans('crud.fail.event.deletion');
+
+        DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
+
+        # Delete related caldates
+
+        try {
+            
+            if ($caldates = Caldate::where('child_id', $event->id)) {
+               $caldates->delete();
+            }
+
+        } catch (\Exception $e) {
+            
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.deletion'));
+
+        }
+
+        # Delete related image (Database + Cloudinary)
+
+        try {
+            
+            $event->deleteImage();
+
+        } catch (\Exception $e) {
+            
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
+
+        }
+
+        # Delete event
+
+        try {
+            
+            $event->delete();
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message);
+        }
+
+        # Success
+
+        DB::commit();
+
+        return response()->json([
+            'success' => trans('crud.success.event.deletion'),
+        ], 200);
+
     }
 
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Place;
-use App\Models\Event;
+use App\Models\Caldate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
@@ -22,12 +22,12 @@ class ProjectController extends Controller
         #Index by place
 
         if ($place_id) {
-            return Place::find($place_id)->projects()->with(['events', 'image'])->get();
+            return Place::find($place_id)->projects()->with(['caldates', 'image'])->get();
 
         # Index all
 
         }else{
-            return Project::with(['events', 'image'])->get();
+            return Project::with(['caldates', 'image'])->get();
         }
     }
 
@@ -57,15 +57,15 @@ class ProjectController extends Controller
         }
 
 
-        #  Creating related events
+        #  Creating related caldates
 
         try {
 
-            $newProject->storeEvents($request->get('events'));
+            $newProject->storeCaldates($request->get('caldates'));
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.creation'));
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.creation'));
         }
         
         # Uploading image to Cloudinary
@@ -156,21 +156,21 @@ class ProjectController extends Controller
             return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
         }
 
-        # Update related events
+        # Update related caldates
 
         if ($request->get('projectOnly') !== true) {
 
             try {
                 
-                if ($events = Event::where('child_id', $project->id)) {
-                    $events->delete();
+                if ($caldates = Caldate::where('child_id', $project->id)) {
+                    $caldates->delete();
                 }
 
-                $editedProject->storeEvents($request->get('events'));
+                $editedProject->storeCaldates($request->get('caldates'));
 
             } catch (\Exception $e) {
 
-                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.update'));
+                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.update'));
             }
             
         }
@@ -199,17 +199,17 @@ class ProjectController extends Controller
         DB::beginTransaction();
         $this->transactionLevel = DB::transactionLevel();
 
-        # Delete related events
+        # Delete related caldates
 
         try {
             
-            if ($events = Event::where('child_id', $project->id)) {
-               $events->delete();
+            if ($caldates = Caldate::where('child_id', $project->id)) {
+               $caldates->delete();
             }
 
         } catch (\Exception $e) {
             
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.deletion'));
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.deletion'));
 
         }
 

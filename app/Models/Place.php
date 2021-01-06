@@ -31,8 +31,7 @@ class Place extends Model
 			'created_at',
 			'updated_at'
 	];
-
-
+	
 	public function projects()
 	{
 			return $this->hasMany('App\Models\Project');
@@ -41,6 +40,11 @@ class Place extends Model
 	public function events()
 	{
 			return $this->hasMany('App\Models\Event');
+	}
+
+	public function caldates()
+	{
+			return $this->hasMany('App\Models\Caldate');
 	}
 
 	public function image()

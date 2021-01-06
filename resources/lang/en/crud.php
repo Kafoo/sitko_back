@@ -35,6 +35,11 @@ return [
         'update' => "Events update failed",
         'deletion' => "Events deletion failed"
       ],
+      'events' => [
+        'creation' => "Calendar dates creation failed",
+        'update' => "Calendar dates update failed",
+        'deletion' => "Calendar dates deletion failed"
+      ],
       'image' => [
         'creation' => "Image upload failed",
         'update' => "Image update failed",

@@ -3,17 +3,17 @@
 namespace Database\Factories;
 
 use DateTime;
-use App\Models\Event;
+use App\Models\Caldate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class EventFactory extends Factory
+class CaldateFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Event::class;
+    protected $model = Caldate::class;
 
     /**
      * Define the model's default state.

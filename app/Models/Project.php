@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Event;
+use App\Models\Caldate;
 use App\Traits\MediaManager;
 
 
@@ -40,9 +40,9 @@ class Project extends Model
         return $this->belongsTo('App\Models\Place');
     }
 
-    public function events()
+    public function caldates()
     {
-        return $this->morphMany('App\Models\Event', 'child');
+        return $this->morphMany('App\Models\Caldate', 'child');
     }
 
     public function image()
@@ -51,19 +51,18 @@ class Project extends Model
     }
 
 
-    public function storeEvents($events){
+    public function storeCaldates($caldates){
 
-        $newEvents = [];
+        $newCaldates = [];
 
-        foreach ($events as $event) {
-            $eventModel = new Event($event);
-            $eventModel->type('project');
-            $newEvents[] = $eventModel;
+        foreach ($caldates as $caldate) {
+            $caldateModel = new Caldate($caldate);
+            $caldateModel->type('project');
+            $newCaldates[] = $caldateModel;
         }
 
-        $this->events = $this->events()->saveMany($newEvents);
+        $this->caldates = $this->caldates()->saveMany($newCaldates);
     }
-
 
 
 }

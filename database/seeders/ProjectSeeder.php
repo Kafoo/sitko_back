@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Http\Controllers\ProjectController;
-
 
 class ProjectSeeder extends Seeder
 {
@@ -18,7 +16,7 @@ class ProjectSeeder extends Seeder
 
         \App\Models\Project::factory(10)->create()
         ->each(function($projects){
-            $projects->events()->save(\App\Models\Event::factory()->create());
+            $projects->caldates()->save(\App\Models\Caldate::factory()->create());
 
             $odd = rand(0,3);
             if ($odd > 1) {
