@@ -245,6 +245,20 @@ class PlaceController extends Controller
 
         }
 
+        # Delete related events
+
+        try {
+
+			$controller = new EventController;
+			foreach ($place->events as $event) {
+				$controller->destroy($event);
+			}
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.deletion'));
+
+        }
 
         # Delete related tags
 
