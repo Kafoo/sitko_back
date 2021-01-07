@@ -15,6 +15,11 @@ return [
         'update' => "Erreur lors de la modification du projet",
         'deletion' => "Erreur lors de la suppression du projet"
       ],
+      'user' => [
+        'creation' => "Erreur lors de la création du profil",
+        'update' => "Erreur lors de la modification du profil",
+        'deletion' => "Erreur lors de la suppression du profil"
+      ],
       'projects' => [
         'creation' => "Les projets n'ont pas pu être créés",
         'update' => "Les projets n'ont pas pu être modifiés",
@@ -52,6 +57,11 @@ return [
         'creation' => "Projet créé avec succès",
         'update' => "Projet modifié avec succès",
         'deletion' => "Projet supprimé avec succès"
+      ],
+      'event' => [
+        'creation' => "Evénement créé avec succès",
+        'update' => "Evénement modifié avec succès",
+        'deletion' => "Evénement supprimé avec succès"
       ],
       'place' => [
         'creation' => "Lieu créé avec succès",

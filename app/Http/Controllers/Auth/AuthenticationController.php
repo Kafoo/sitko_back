@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class AuthenticationController extends Controller
 {
     public function user()
     {
-        return auth()->user();
+        $user = auth()->user();
+        return User::with('image')->find($user->id);
     }
 }

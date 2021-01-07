@@ -15,6 +15,11 @@ return [
         'update' => "Project could not be updated",
         'deletion' => "Project could not be deleted"
       ],
+      'user' => [
+        'creation' => "User could not be created",
+        'update' => "User could not be updated",
+        'deletion' => "User could not be deleted"
+      ],
       'projects' => [
         'creation' => "Projects creation failed",
         'update' => "Projects update failed",
@@ -52,6 +57,11 @@ return [
         'creation' => "Project has been successfully created",
         'update' => "Project has been successfully updated",
         'deletion' => "Project has been successfully delete"
+      ],
+      'event' => [
+        'creation' => "Event has been successfully created",
+        'update' => "Event has been successfully updated",
+        'deletion' => "Event has been successfully delete"
       ],
       'place' => [
         'creation' => "Place has been successfully created",

@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use App\Traits\MediaManager;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens;
+    use MediaManager;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +47,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function image()
+    {
+        return $this->morphOne('App\Models\Image', 'imageable');
+    }
 
     public function sendEmailVerificationNotification()
     {
