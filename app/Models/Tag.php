@@ -20,11 +20,26 @@ class Tag extends Model
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
+    /**
      * Get all of the posts that are assigned this tag.
      */
     public function place()
     {
         return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Tags_category');
     }
 
     /**

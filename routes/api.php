@@ -34,6 +34,8 @@ Route::middleware('auth:api')->group(function(){
 
     Route::apiResource('user', 'App\Http\Controllers\UserController');
 
+    Route::apiResource('tags_category', 'App\Http\Controllers\Tags_categoryController');
+
 });
 
 

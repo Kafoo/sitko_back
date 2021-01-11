@@ -16,7 +16,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return Place::with(['image', 'tags', 'projects'])->get();
+        return Place::with(['image', 'tags.category', 'projects'])->get();
     }
 
     /**
@@ -71,6 +71,9 @@ class PlaceController extends Controller
                     $newTags[] = $tag['id'];
                 }else{
                     $tagModel = new Tag($tag);
+                    if($tag['category']){
+                        $tagModel->category_id = $tag['category']['id'];
+                    }
                     $tagModel->save();
                     $newTags[] = $tagModel->id;
                 }
@@ -105,7 +108,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        return Place::with(['image', 'tags'])->find($placeId);
+        return Place::with(['image', 'tags.category'])->find($placeId);
     }
 
     /**
@@ -154,7 +157,7 @@ class PlaceController extends Controller
             foreach ($request->tags as $tag) {
                 $isNew = true;
                 foreach ($editedPlace->tags as $oldTag) {
-                    if ($tag == $oldTag){
+                    if ($tag['title'] == $oldTag->title){
                         $isNew = false;
                     }
                 }
@@ -164,6 +167,9 @@ class PlaceController extends Controller
                         $newTags[] = $tag['id'];
                     }else{
                         $tagModel = new Tag($tag);
+                        if($tag['category']){
+                            $tagModel->category_id = $tag['category']['id'];
+                        }
                         $tagModel->save();
                         $newTags[] = $tagModel->id;
                     }
@@ -173,7 +179,7 @@ class PlaceController extends Controller
             foreach($editedPlace->tags as $tag){
                 $isUnused = true;
                 foreach($request->tags as $newTag){
-                    if ($tag == $newTag){
+                    if ($tag->title == $newTag['title']){
                         $isUnused = false;
                     }
                 }

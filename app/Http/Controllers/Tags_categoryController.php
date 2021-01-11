@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use App\Models\Tags_category;
 use Illuminate\Http\Request;
 
-class TagController extends Controller
+class Tags_categoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        return Tag::with('category')->get();
+        return Tags_category::all();
     }
 
     /**
