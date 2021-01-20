@@ -21,14 +21,14 @@ class Controller extends BaseController
             if($info){
                 DB::rollback();
                 return response()->json([
-                    'message' => $message,
+                    'customMessage' => $message,
                     'info' => $info,
                     'more' => $e->getMessage()
                 ], 500);
             }else{
                 DB::rollback();
                 return response()->json([
-                    'message' => $message
+                    'customMessage' => $message
                 ], 500);
             }
 

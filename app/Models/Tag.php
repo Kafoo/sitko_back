@@ -29,25 +29,46 @@ class Tag extends Model
         'updated_at'
     ];
 
+    public $with = ['category'];
+
     /**
-     * Get all of the posts that are assigned this tag.
+     * Get all of the places that are assigned this tag.
      */
     public function place()
     {
         return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
     }
 
-    public function category()
-    {
-        return $this->belongsTo('App\Models\Tags_category');
-    }
-
     /**
-     * Get all of the videos that are assigned this tag.
+     * Get all of the users that are assigned this tag.
      */
     public function user()
     {
-        return $this->morphedByMany('App\Models\User', 'taggable')->withTimestamps();;
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+    }
+
+    /**
+     * Get all of the projects that are assigned this tag.
+     */
+    public function project()
+    {
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+    }
+
+    /**
+     * Get all of the events that are assigned this tag.
+     */
+    public function event()
+    {
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+    }
+
+    /**
+     * Get all of the events that are assigned this tag.
+     */
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Tags_category');
     }
 
 }

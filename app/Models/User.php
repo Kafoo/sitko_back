@@ -48,10 +48,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public $with = ['image', 'tags'];
+
     public function image()
     {
         return $this->morphOne('App\Models\Image', 'imageable');
     }
+
+	public function tags()
+	{
+			return $this->morphToMany('App\Models\Tag', 'taggable');
+	}
 
     public function sendEmailVerificationNotification()
     {

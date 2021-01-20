@@ -35,6 +35,8 @@ class Event extends Model
         'updated_at'
     ];
 
+    public $with = ['tags'];
+
     public function place()
     {
         return $this->belongsTo('App\Models\Place');
@@ -50,6 +52,10 @@ class Event extends Model
         return $this->morphOne('App\Models\Image', 'imageable');
     }
 
+	public function tags()
+	{
+			return $this->morphToMany('App\Models\Tag', 'taggable');
+	}
 
     public function storeCaldates($caldates){
 

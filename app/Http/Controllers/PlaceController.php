@@ -16,7 +16,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return Place::with(['image', 'tags.category', 'projects'])->get();
+        return Place::with(['image', 'tags', 'projects'])->get();
     }
 
     /**
@@ -59,7 +59,6 @@ class PlaceController extends Controller
         }
 
         # Link/Create Tags
-
 
         try {
 
@@ -108,7 +107,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        return Place::with(['image', 'tags.category'])->find($placeId);
+        return Place::with(['image', 'tags'])->find($placeId);
     }
 
     /**

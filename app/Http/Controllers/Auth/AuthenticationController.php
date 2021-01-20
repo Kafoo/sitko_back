@@ -7,9 +7,8 @@ use App\Models\User;
 
 class AuthenticationController extends Controller
 {
-    public function user()
+    public function getauth()
     {
-        $user = auth()->user();
-        return User::with('image')->find($user->id);
+        return auth()->user();
     }
 }

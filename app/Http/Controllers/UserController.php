@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
 
     public function index()
     {
-        return User::with(['image'])->all();
+        return User::with(['image'])->get();
     }
 
     public function update(Request $request, User $user)
@@ -23,17 +24,40 @@ class UserController extends Controller
         DB::beginTransaction();
         $this->transactionLevel = DB::transactionLevel();
 
-        # Update project
+        # Update user
 
         try {       
 
-            $editedUser = tap($user)->update($request->all());
+            $editedUser = tap($user)->update([
+                        'name'=> $request->name,
+                        'last_name'=> $request->last_name,
+                        'email'=> $request->email,
+            ]);
 
-        } catch (\Exception $e) {
+
+        } catch (\Exception  $e) {
 
             return $this->returnOrThrow($e, $fail_message);
         }
         
+        # Update password
+
+        try {       
+
+            if ($request->password) {
+                $editedUser = tap($user)->update([
+                            'name'=> $request->name,
+                            'last_name'=> $request->last_name,
+                            'email'=> $request->email,
+                            'password'=> Hash::make($request->password)
+                ]);
+            }
+
+        } catch (\Exception  $e) {
+
+            return $this->returnOrThrow($e, $fail_message);
+        }
+
         # Update related image (Database + Cloudinary)
 
         try {                
@@ -53,6 +77,16 @@ class UserController extends Controller
                 $editedUser->deleteImage();
             }
             
+        # Update related tags
+
+        try {
+
+            $editedUser->updateTags($request->tags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
+        }
 
         } catch (\Exception $e) {
 
@@ -69,8 +103,61 @@ class UserController extends Controller
     }
 
 
-	public function destroy($userID)
+	public function destroy(User $user)
 	{
-		return User::find($userID)->delete();
+
+        $fail_message = trans('crud.fail.user.deletion');
+
+        DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
+
+        # Delete related image (Database + Cloudinary)
+
+        try {
+            
+            $user->deleteImage();
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
+        }
+
+        # Delete related tags
+
+        try {
+
+			foreach ($user->tags as $tag) {
+                if ($tag->custom == '1') {
+    				$tag->delete();
+                }
+			}
+
+            $user->tags()->detach();
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
+
+        } 
+
+        # Delete user
+
+        try {
+            
+            $user->delete();
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message);
+        }
+
+        # Success
+
+        DB::commit();
+
+        return response()->json([
+            'success' => trans('crud.success.user.deletion'),
+        ], 200);
+
 	}
 }

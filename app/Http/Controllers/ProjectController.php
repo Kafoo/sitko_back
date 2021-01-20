@@ -56,7 +56,6 @@ class ProjectController extends Controller
             return $this->returnOrThrow($e, $fail_message);
         }
 
-
         #  Creating related caldates
 
         try {
@@ -80,6 +79,17 @@ class ProjectController extends Controller
 
                 return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
             }
+        }
+
+        # Link/Create Tags
+
+        try {
+
+            $newProject->updateTags($request->tags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.creation'));
         }
 
         # Success
@@ -174,6 +184,17 @@ class ProjectController extends Controller
             }
             
         }
+        
+        # Update related tags
+
+        try {
+
+            $editedProject->updateTags($request->tags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
+        }
 
         # Success
 
@@ -224,6 +245,19 @@ class ProjectController extends Controller
             return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
 
         }
+
+        # Delete related tags
+
+        try {
+
+            $project->updateTags([]);
+
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
+
+        } 
 
         # Delete project
 

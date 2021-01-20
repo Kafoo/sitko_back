@@ -82,6 +82,17 @@ class EventController extends Controller
             }
         }
 
+        # Link/Create Tags
+
+        try {
+
+            $newEvent->updateTags($request->tags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.creation'));
+        }
+
         # Success
 
         DB::commit();
@@ -175,6 +186,17 @@ class EventController extends Controller
             
         }
 
+        # Update related tags
+
+        try {
+
+            $editedEvent->updateTags($request->tags);
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
+        }
+
         # Success
 
         DB::commit();
@@ -224,6 +246,19 @@ class EventController extends Controller
             return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
 
         }
+
+        # Delete related tags
+
+        try {
+
+            $event->updateTags([]);
+
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
+
+        } 
 
         # Delete event
 

@@ -7,7 +7,6 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -52,7 +51,7 @@ class LoginController extends Controller
 
             return response()->json([
                 'token'    => $request->user()->createToken($request->input('device_name'))->accessToken,
-                'user'     => User::with('image')->find($request->user()->id)
+                'user'     => $request->user()
             ]);
         }
 
