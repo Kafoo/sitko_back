@@ -14,7 +14,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        return Tag::with('category')->get();
+        return Tag::where(['custom' => 0])->get();
     }
 
     /**
