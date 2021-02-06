@@ -35,7 +35,7 @@ class Project extends Model
         'updated_at'
     ];
 
-    public $with = ['tags'];
+    public $with = ['tags', 'image', 'caldates'];
 
     public function place()
     {
@@ -56,19 +56,5 @@ class Project extends Model
 	{
 			return $this->morphToMany('App\Models\Tag', 'taggable');
 	}
-
-    public function storeCaldates($caldates){
-
-        $newCaldates = [];
-
-        foreach ($caldates as $caldate) {
-            $caldateModel = new Caldate($caldate);
-            $caldateModel->type('project');
-            $newCaldates[] = $caldateModel;
-        }
-
-        $this->caldates = $this->caldates()->saveMany($newCaldates);
-    }
-
 
 }

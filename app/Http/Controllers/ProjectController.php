@@ -22,12 +22,12 @@ class ProjectController extends Controller
         #Index by place
 
         if ($place_id) {
-            return Place::find($place_id)->projects()->with(['caldates', 'image'])->get();
+            return Place::find($place_id)->projects()->get();
 
         # Index all
 
         }else{
-            return Project::with(['caldates', 'image'])->get();
+            return Project::get();
         }
     }
 
@@ -109,8 +109,9 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show($id)
     {
+        $project = Project::find($id);
         return $project;
     }
 

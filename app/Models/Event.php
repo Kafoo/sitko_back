@@ -57,18 +57,4 @@ class Event extends Model
 			return $this->morphToMany('App\Models\Tag', 'taggable');
 	}
 
-    public function storeCaldates($caldates){
-
-        $newCaldates = [];
-
-        foreach ($caldates as $caldate) {
-            $caldateModel = new Caldate($caldate);
-            $caldateModel->type('event');
-            $newCaldates[] = $caldateModel;
-        }
-
-        $this->caldates = $this->caldates()->saveMany($newCaldates);
-    }
-
-
 }

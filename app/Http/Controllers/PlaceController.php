@@ -16,7 +16,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return Place::with(['image', 'tags', 'projects'])->get();
+        return Place::get();
     }
 
     /**
@@ -62,23 +62,7 @@ class PlaceController extends Controller
 
         try {
 
-            $newTags = [];
-
-            foreach ($request->tags as $tag) {
-
-                if (isset($tag['id'])) {
-                    $newTags[] = $tag['id'];
-                }else{
-                    $tagModel = new Tag($tag);
-                    if($tag['category']){
-                        $tagModel->category_id = $tag['category']['id'];
-                    }
-                    $tagModel->save();
-                    $newTags[] = $tagModel->id;
-                }
-            }
-
-            $newPlace->tags = $newPlace->tags()->sync($newTags);
+            $newPlace->updateTags($request->tags);
 
         } catch (\Exception $e) {
 
@@ -107,7 +91,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        return Place::with(['image', 'tags'])->find($placeId);
+        return Place::find($placeId);
     }
 
     /**
@@ -151,49 +135,7 @@ class PlaceController extends Controller
 
         try {                  
 
-            $newTags = [];
-        
-            foreach ($request->tags as $tag) {
-                $isNew = true;
-                foreach ($editedPlace->tags as $oldTag) {
-                    if ($tag['title'] == $oldTag->title){
-                        $isNew = false;
-                    }
-                }
-
-                if ($isNew) {
-                    if (isset($tag['id'])) {
-                        $newTags[] = $tag['id'];
-                    }else{
-                        $tagModel = new Tag($tag);
-                        if($tag['category']){
-                            $tagModel->category_id = $tag['category']['id'];
-                        }
-                        $tagModel->save();
-                        $newTags[] = $tagModel->id;
-                    }
-                }
-            }
-
-            foreach($editedPlace->tags as $tag){
-                $isUnused = true;
-                foreach($request->tags as $newTag){
-                    if ($tag->title == $newTag['title']){
-                        $isUnused = false;
-                    }
-                }
-
-                if ($isUnused) {
-                    if ($tag->custom == '1') {
-                        $tag->delete();
-                    }
-                }else{
-                    $newTags[] = $tag->id;
-                }
-            }
-
-            $editedPlace->tags()->sync($newTags);
-            $editedPlace->load('tags');
+            $editedPlace->updateTags($request->tags);
 
         } catch (\Exception $e) {
 

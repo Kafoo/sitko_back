@@ -21,6 +21,13 @@ class Tags_category extends Model
         'updated_at'
     ];
 
+    public $appends = ['translated_name'];
+
+    public function getTranslatedNameAttribute()
+    {
+        return trans('tags.categories.'.$this->name);
+    }
+
 	public function tags()
 	{
 			return $this->hasMany('App\Models\Tag');

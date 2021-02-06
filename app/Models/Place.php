@@ -31,6 +31,8 @@ class Place extends Model
 			'created_at',
 			'updated_at'
 	];
+
+  public $with = ['image', 'tags', 'projects'];
 	
 	public function projects()
 	{

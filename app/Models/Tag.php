@@ -31,6 +31,17 @@ class Tag extends Model
 
     public $with = ['category'];
 
+    public $appends = ['translated_title'];
+
+    public function getTranslatedTitleAttribute()
+    {
+        if ($this->custom) {
+            return $this->title;
+        }else{
+            return trans('tags.'.$this->title);
+        }
+    }
+
     /**
      * Get all of the places that are assigned this tag.
      */
