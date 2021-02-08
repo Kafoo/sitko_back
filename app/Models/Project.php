@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Caldate;
 use App\Traits\MediaManager;
 
 
@@ -35,7 +34,7 @@ class Project extends Model
         'updated_at'
     ];
 
-    public $with = ['tags', 'image', 'caldates'];
+    public $with = ['tags', 'image', 'caldates', 'place'];
 
     public function place()
     {

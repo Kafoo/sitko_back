@@ -32,7 +32,7 @@ class Place extends Model
 			'updated_at'
 	];
 
-  public $with = ['image', 'tags', 'projects'];
+  public $with = ['image', 'tags'];
 	
 	public function projects()
 	{

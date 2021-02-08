@@ -27,7 +27,7 @@ class ProjectController extends Controller
         # Index all
 
         }else{
-            return Project::get();
+            return Project::with('place')->get();
         }
     }
 
