@@ -34,6 +34,15 @@ class Place extends Model
 
   public $with = ['image', 'tags', 'author'];
 
+  public $appends = ['projects_count'];
+
+	public function getProjectsCountAttribute()
+	{
+			$count = $this->projects()->count();
+
+			return $count;
+	}
+
 	public function author()
 	{
 			return $this->belongsTo('App\Models\User', 'author_id');
