@@ -9,6 +9,10 @@ class AuthenticationController extends Controller
 {
     public function getauth()
     {
-        return auth()->user();
+
+        $user = auth()->user();
+        $user->place = auth()->user()->place;
+
+        return $user;
     }
 }

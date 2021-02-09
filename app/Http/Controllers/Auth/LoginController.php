@@ -49,9 +49,12 @@ class LoginController extends Controller
                 return $response;
             }
 
+            $user = $request->user();
+            $user->place = $request->user()->place;
+
             return response()->json([
                 'token'    => $request->user()->createToken($request->input('device_name'))->accessToken,
-                'user'     => $request->user()
+                'user'     => $user
             ]);
         }
 
