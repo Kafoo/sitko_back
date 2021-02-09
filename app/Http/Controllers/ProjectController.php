@@ -8,6 +8,7 @@ use App\Models\Caldate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -49,7 +50,10 @@ class ProjectController extends Controller
 
         try {
 
-            $newProject = Project::create($request->all());
+            $author_id = Auth::id();
+
+            $newProject = Project::create($request->all() + ['author_id' => $author_id]);
+            $newProject->load('place');
 
         } catch (\Exception $e) {
 

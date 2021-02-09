@@ -35,11 +35,16 @@ class Event extends Model
         'updated_at'
     ];
 
-    public $with = ['tags'];
+    public $with = ['tags', 'image', 'caldates', 'place', 'author'];
 
     public function place()
     {
         return $this->belongsTo('App\Models\Place');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo('App\Models\User', 'author_id');
     }
 
     public function caldates()

@@ -8,6 +8,7 @@ use App\Models\Caldate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -27,7 +28,7 @@ class EventController extends Controller
         # Index all
 
         }else{
-            return Event::with(['caldates', 'image'])->get();
+            return Event::with('place')->get();
         }
     }
 
@@ -49,7 +50,10 @@ class EventController extends Controller
 
         try {
 
-            $newEvent = Event::create($request->all());
+            $author_id = Auth::id();
+
+            $newEvent = Event::create($request->all() + ['author_id' => $author_id]);
+            $newEvent->load('place');
 
         } catch (\Exception $e) {
 

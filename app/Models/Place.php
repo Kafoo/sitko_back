@@ -32,8 +32,13 @@ class Place extends Model
 			'updated_at'
 	];
 
-  public $with = ['image', 'tags'];
-	
+  public $with = ['image', 'tags', 'author'];
+
+	public function author()
+	{
+			return $this->belongsTo('App\Models\User', 'author_id');
+	}
+
 	public function projects()
 	{
 			return $this->hasMany('App\Models\Project');

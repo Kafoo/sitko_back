@@ -37,7 +37,9 @@ class PlaceController extends Controller
 
         try {
 
-            $newPlace = Place::create($request->all());
+            $author_id = Auth::id();
+
+            $newPlace = Place::create($request->all() + ['author_id' => $author_id]);
 
         } catch (\Exception $e) {
 
