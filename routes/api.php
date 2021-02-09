@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::get('info', function(){echo phpinfo();});
+Route::get('info', function(){echo phpinfo();});
 
 
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], function () {
