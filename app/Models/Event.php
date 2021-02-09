@@ -22,6 +22,7 @@ class Event extends Model
     	'title',
     	'type',
     	'description',
+        'author_id',
         'place_id'
     ];
 
