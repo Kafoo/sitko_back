@@ -54,6 +54,7 @@ class ProjectController extends Controller
 
             $newProject = Project::create($request->all() + ['author_id' => $author_id]);
             $newProject->load('place');
+            $newProject->load('author');
 
         } catch (\Exception $e) {
 

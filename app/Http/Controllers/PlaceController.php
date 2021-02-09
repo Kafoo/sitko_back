@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Place;
-use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PlaceController extends Controller
 {
@@ -40,6 +40,8 @@ class PlaceController extends Controller
             $author_id = Auth::id();
 
             $newPlace = Place::create($request->all() + ['author_id' => $author_id]);
+            $newPlace->load('author');
+
 
         } catch (\Exception $e) {
 

@@ -54,6 +54,7 @@ class EventController extends Controller
 
             $newEvent = Event::create($request->all() + ['author_id' => $author_id]);
             $newEvent->load('place');
+            $newEvent->load('author');
 
         } catch (\Exception $e) {
 
