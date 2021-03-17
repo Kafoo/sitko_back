@@ -211,6 +211,21 @@ class PlaceController extends Controller
 
         }
 
+        # Delete related notes
+
+        try {
+
+			$controller = new NoteController;
+			foreach ($place->notes as $note) {
+				$controller->destroy($note);
+			}
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.notes.deletion'));
+
+        }
+
         # Delete related tags
 
         try {
@@ -249,4 +264,40 @@ class PlaceController extends Controller
         ], 200);
 
     }
+
+
+    public function join($place_id) {
+    
+        try {
+            
+            Place::find($place_id)->members()->attach(auth()->user());
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $e->getMessage());
+        }
+    
+        return response()->json([
+            'success' => trans('crud.success.place.update'),
+        ], 200);
+
+    }
+
+    public function leave($place_id) {
+    
+        try {
+            
+            Place::find($place_id)->members()->detach(auth()->user());
+
+        } catch (\Exception $e) {
+
+            return $this->returnOrThrow($e, $e->getMessage());
+        }
+    
+        return response()->json([
+            'success' => trans('crud.success.place.update'),
+        ], 200);
+
+    }
+
 }

@@ -9,11 +9,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Traits\MediaManager;
+use App\Traits\Taggable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens;
     use MediaManager;
+    use Taggable;
 
     /**
      * The attributes that are mass assignable.
@@ -55,15 +57,15 @@ class User extends Authenticatable implements MustVerifyEmail
 			return $this->hasOne('App\Models\Place', 'author_id');
 	}
 
+	public function joined_places()
+	{
+			return $this->belongsToMany('App\Models\Place');
+	}
+
     public function image()
     {
         return $this->morphOne('App\Models\Image', 'imageable');
     }
-
-	public function tags()
-	{
-			return $this->morphToMany('App\Models\Tag', 'taggable');
-	}
 
     public function sendEmailVerificationNotification()
     {

@@ -15,6 +15,16 @@ return [
         'update' => "Project could not be updated",
         'deletion' => "Project could not be deleted"
       ],
+      'event' => [
+        'creation' => "Event could not be created",
+        'update' => "Event could not be updated",
+        'deletion' => "Event could not be deleted"
+      ],
+      'note' => [
+        'creation' => "Note could not be created",
+        'update' => "Note could not be updated",
+        'deletion' => "Note could not be deleted"
+      ],
       'user' => [
         'creation' => "User could not be created",
         'update' => "User could not be updated",
@@ -40,7 +50,12 @@ return [
         'update' => "Events update failed",
         'deletion' => "Events deletion failed"
       ],
-      'events' => [
+      'notes' => [
+        'creation' => "Notes creation failed",
+        'update' => "Notes update failed",
+        'deletion' => "Notes deletion failed"
+      ],
+      'caldates' => [
         'creation' => "Calendar dates creation failed",
         'update' => "Calendar dates update failed",
         'deletion' => "Calendar dates deletion failed"
@@ -62,6 +77,11 @@ return [
         'creation' => "Event has been successfully created",
         'update' => "Event has been successfully updated",
         'deletion' => "Event has been successfully delete"
+      ],
+      'note' => [
+        'creation' => "Note has been successfully created",
+        'update' => "Note has been successfully updated",
+        'deletion' => "Note has been successfully delete"
       ],
       'place' => [
         'creation' => "Place has been successfully created",

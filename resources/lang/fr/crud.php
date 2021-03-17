@@ -15,6 +15,16 @@ return [
         'update' => "Erreur lors de la modification du projet",
         'deletion' => "Erreur lors de la suppression du projet"
       ],
+      'event' => [
+        'creation' => "Erreur lors de la création de l'événement",
+        'update' => "Erreur lors de la modification de l'événement",
+        'deletion' => "Erreur lors de la suppression de l'événement"
+      ],
+      'note' => [
+        'creation' => "Erreur lors de la création de la note",
+        'update' => "Erreur lors de la modification de la note",
+        'deletion' => "Erreur lors de la suppression de la note"
+      ],
       'user' => [
         'creation' => "Erreur lors de la création du profil",
         'update' => "Erreur lors de la modification du profil",
@@ -34,6 +44,11 @@ return [
         'creation' => "Les événements n'ont pas pu être créés",
         'update' => "Les événements n'ont pas pu être modifiés",
         'deletion' => "Les événements n'ont pas pu être supprimés"
+      ],
+      'notes' => [
+        'creation' => "Les notes n'ont pas pu être créées",
+        'update' => "Les notes n'ont pas pu être modifiées",
+        'deletion' => "Les notes n'ont pas pu être supprimées"
       ],
       'caldates' => [
         'creation' => "Les date n'ont pas pu être créés dans l'agenda",

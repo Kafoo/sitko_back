@@ -35,9 +35,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'as' => 'api.'], funct
     });
 
 
-
-
-
 });
 
 Route::middleware('auth:api')->group(function(){
@@ -54,6 +51,10 @@ Route::middleware('auth:api')->group(function(){
 
 	Route::apiResource('place.project', 'App\Http\Controllers\ProjectController');
 
+	Route::apiResource('note', 'App\Http\Controllers\NoteController');
+
+	Route::apiResource('place.note', 'App\Http\Controllers\NoteController');
+
 	Route::apiResource('event', 'App\Http\Controllers\EventController');
 
 	Route::apiResource('place.event', 'App\Http\Controllers\EventController');
@@ -61,5 +62,9 @@ Route::middleware('auth:api')->group(function(){
     Route::apiResource('user', 'App\Http\Controllers\UserController');
 
     Route::apiResource('tags_category', 'App\Http\Controllers\Tags_categoryController');
+
+    Route::put('join/{place_id}', 'App\Http\Controllers\PlaceController@join');
+
+    Route::put('leave/{place_id}', 'App\Http\Controllers\PlaceController@leave');
 
 });

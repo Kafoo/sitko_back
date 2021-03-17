@@ -13,12 +13,11 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-
     protected function returnOrThrow($e, $message, $info = null){
 
         if ($this->transactionLevel == 1) {
 
-            if($info){
+            if(true){
                 DB::rollback();
                 return response()->json([
                     'customMessage' => $message,

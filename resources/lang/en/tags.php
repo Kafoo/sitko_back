@@ -20,7 +20,7 @@ return [
     'sewing'     => 'sewing',
     'building'     => 'building',
     'herbalism'     => 'herbalism',
-    'mindfulness'     => 'mindfulness conscience',
+    'meditation'     => 'meditation',
     'street art'     => 'street art',
     'music'     => 'music',
     'performance'     => 'performance',

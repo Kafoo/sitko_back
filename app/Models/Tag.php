@@ -17,6 +17,7 @@ class Tag extends Model
     protected $fillable = [
     	'title',
     	'custom',
+        'order'
     ];
 
     /**
@@ -47,7 +48,7 @@ class Tag extends Model
      */
     public function place()
     {
-        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();
     }
 
     /**
@@ -55,7 +56,7 @@ class Tag extends Model
      */
     public function user()
     {
-        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();
     }
 
     /**
@@ -63,7 +64,7 @@ class Tag extends Model
      */
     public function project()
     {
-        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();
     }
 
     /**
@@ -71,7 +72,7 @@ class Tag extends Model
      */
     public function event()
     {
-        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();;
+        return $this->morphedByMany('App\Models\Place', 'taggable')->withTimestamps();
     }
 
     /**

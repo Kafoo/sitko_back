@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\MediaManager;
-
+use Illuminate\Database\Eloquent\Model;
+use App\Traits\Taggable;
+use App\Traits\Projent;
 
 class Project extends Model
 {
     use HasFactory;
     use MediaManager;
+    use Projent;
+    use Taggable;
 
     /**
      * The attributes that are mass assignable.
@@ -37,29 +40,5 @@ class Project extends Model
 
     public $with = ['tags', 'image', 'caldates', 'place', 'author'];
 
-    public function place()
-    {
-        return $this->belongsTo('App\Models\Place');
-    }
-
-    public function author()
-    {
-        return $this->belongsTo('App\Models\User', 'author_id');
-    }
-
-    public function caldates()
-    {
-        return $this->morphMany('App\Models\Caldate', 'child');
-    }
-
-    public function image()
-    {
-        return $this->morphOne('App\Models\Image', 'imageable');
-    }
-
-	public function tags()
-	{
-			return $this->morphToMany('App\Models\Tag', 'taggable');
-	}
 
 }
