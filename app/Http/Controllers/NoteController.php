@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\NoteResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\Place;
 use App\Models\Note;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +21,7 @@ class NoteController extends Controller
     public function index(Request $request, $place_id)
     {
 
-        return Place::find($place_id)->notes()->get();
+        return NoteResource::collection(Place::find($place_id)->notes()->get());
 
     }
 
@@ -32,8 +35,7 @@ class NoteController extends Controller
     {
        $fail_message = trans('crud.fail.note.creation');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Creating Note
 
@@ -56,7 +58,7 @@ class NoteController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.note.creation'),
-            'note' => $newNote
+            'note' => new NoteResource($newNote)
         ], 200);
     }
 
@@ -67,7 +69,7 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-        return Note::find($id);
+        return new NoteResource(Note::find($id));
     }
 
     /**
@@ -82,8 +84,7 @@ class NoteController extends Controller
 
         $fail_message = trans('crud.fail.note.update');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Update note
 
@@ -101,7 +102,7 @@ class NoteController extends Controller
         DB::commit();
         return response()->json([
             'success' => trans('crud.success.note.update'),
-            'note' => $editedNote
+            'note' => new NoteResource($editedNote)
         ], 200);
     }
 
@@ -116,8 +117,7 @@ class NoteController extends Controller
 
         $fail_message = trans('crud.fail.note.deletion');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Delete note
 

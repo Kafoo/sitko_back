@@ -29,10 +29,10 @@ class ProjentController extends Controller
 
             if ($request->filter == 'incoming') {
 
-                return $this->incoming(Place::find($place_id)->$entities())->get();
+                return $this->resource::collection($this->incoming(Place::find($place_id)->$entities())->get());
 
             }else{
-              return Place::find($place_id)->$entities()->get();
+              return $this->resource::collection(Place::find($place_id)->$entities()->get());
             }
 
 
@@ -42,10 +42,10 @@ class ProjentController extends Controller
 
             if ($request->filter == 'incoming') {
             
-              return $this->incoming($this->model->with('place'))->get();
+              return $this->resource::collection($this->incoming($this->model->with('place'))->get());
 
             }else{
-              return $this->model->with('place')->get();
+              return $this->resource::collection($this->model->with('place')->get());
             }
 
         }
@@ -62,8 +62,7 @@ class ProjentController extends Controller
 
        $fail_message = trans('crud.fail.'.$this->projent_type.'.creation');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Creating Project
 
@@ -122,7 +121,7 @@ class ProjentController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.'.$this->projent_type.'.creation'),
-            $this->projent_type => $newProjent
+            $this->projent_type => new $this->resource($newProjent)
         ], 200);
     }
 
@@ -135,7 +134,7 @@ class ProjentController extends Controller
     public function projentShow($id)
     {
         $projent = $this->model->find($id);
-        return $projent;
+        return new $this->resource($projent);
     }
 
 
@@ -151,8 +150,7 @@ class ProjentController extends Controller
 
         $fail_message = trans('crud.fail.'.$this->projent_type.'.update');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Update project
 
@@ -221,7 +219,7 @@ class ProjentController extends Controller
         DB::commit();
         return response()->json([
             'success' => trans('crud.success.'.$this->projent_type.'.update'),
-            $this->projent_type => $editedProjent
+            $this->projent_type => new $this->resource($editedProjent)
         ], 200);
     }
 
@@ -237,8 +235,7 @@ class ProjentController extends Controller
 
         $fail_message = trans('crud.fail.'.$this->projent_type.'.deletion');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Delete related caldates
 
@@ -300,9 +297,9 @@ class ProjentController extends Controller
 
     }
 
-    private function incoming($projects){
+    private function incoming($projents){
 
-        return $projects->whereHas('caldates', function ($query) {
+        return $projents->whereHas('caldates', function ($query) {
             $query->where('start', '>', Carbon::now()->toDateTimeString());
         });
     }

@@ -7,6 +7,7 @@ use App\Traits\MediaManager;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Taggable;
 use App\Traits\Projent;
+use Illuminate\Notifications\Notifiable;
 
 class Project extends Model
 {
@@ -34,11 +35,7 @@ class Project extends Model
      * @var array
      */
     protected $hidden = [
-        'created_at',
-        'updated_at'
+        //
     ];
-
-    public $with = ['tags', 'image', 'caldates', 'place', 'author'];
-
 
 }

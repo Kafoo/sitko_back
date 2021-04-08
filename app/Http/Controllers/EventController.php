@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
@@ -9,6 +10,7 @@ class EventController extends ProjentController
 {
  
     public $projent_type = 'event';
+    public $resource = EventResource::class;
 
     public $model;
 

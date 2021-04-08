@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Place;
+use App\Http\Resources\PlaceResource;
+use App\Traits\Controllers\LinkableController;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PlaceController extends Controller
 {
+
+    use LinkableController;
+
+    protected $model = Place::class;
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +24,7 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return Place::get();
+        return PlaceResource::collection(Place::all());
     }
 
     /**
@@ -30,8 +38,7 @@ class PlaceController extends Controller
 
        $fail_message = trans('crud.fail.place.creation');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Creating Place
 
@@ -95,7 +102,7 @@ class PlaceController extends Controller
     public function show($placeId)
     {
 
-        return Place::find($placeId);
+        return new PlaceResource(Place::find($placeId));
     }
 
     /**
@@ -110,8 +117,7 @@ class PlaceController extends Controller
 
         $fail_message = trans('crud.fail.place.update');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Update place
 
@@ -167,8 +173,7 @@ class PlaceController extends Controller
 
         $fail_message = trans('crud.fail.place.deletion');
 
-        DB::beginTransaction();
-        $this->transactionLevel = DB::transactionLevel();
+        $this->beginTransaction();
 
         # Delete related image (Database + Cloudinary)
 
@@ -261,41 +266,6 @@ class PlaceController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.place.deletion'),
-        ], 200);
-
-    }
-
-
-    public function join($place_id) {
-    
-        try {
-            
-            Place::find($place_id)->members()->attach(auth()->user());
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $e->getMessage());
-        }
-    
-        return response()->json([
-            'success' => trans('crud.success.place.update'),
-        ], 200);
-
-    }
-
-    public function leave($place_id) {
-    
-        try {
-            
-            Place::find($place_id)->members()->detach(auth()->user());
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $e->getMessage());
-        }
-    
-        return response()->json([
-            'success' => trans('crud.success.place.update'),
         ], 200);
 
     }

@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\MediaManager;
+use App\Traits\Relationable;
 use App\Traits\Taggable;
-
+use Carbon\Carbon;
 
 class Place extends Model
 {
 	use HasFactory;
 	use MediaManager;
-  use Taggable;
+  use Taggable, Relationable;
 
 	/**
 		* The attributes that are mass assignable.
@@ -37,29 +38,6 @@ class Place extends Model
 
   public $with = ['image', 'tags', 'author'];
 
-  public $appends = ['projects_count', 'joined'];
-
-	public function getProjectsCountAttribute()
-	{
-			$count = $this->projects()->count();
-
-			return $count;
-	}
-
-	public function getJoinedAttribute()
-	{
-
-			$joined = false;
-
-			foreach ($this->members as $member) {
-				if ($member->id === auth()->user()->id) {
-					$joined = true;
-				}
-			}
-
-			return $joined;
-	}
-
 	public function author()
 	{
 			return $this->belongsTo('App\Models\User', 'author_id');
@@ -73,6 +51,13 @@ class Place extends Model
 	public function projects()
 	{
 			return $this->hasMany('App\Models\Project');
+	}
+
+	public function active_projects()
+	{
+			return $this->hasMany('App\Models\Project')->whereHas('caldates', function ($query) {
+            $query->where('start', '>', Carbon::now()->toDateTimeString());
+        });
 	}
 
 	public function events()

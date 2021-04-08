@@ -40,6 +40,11 @@ return [
         'update' => "Place could not be updated",
         'deletion' => "Place could not be deleted"
       ],
+      'notification' => [
+        'creation' => "Notification could not be created",
+        'update' => "Notification could not be updated",
+        'deletion' => "Notification could not be deleted"
+      ],
       'tags' => [
         'creation' => "Tags could not be created",
         'update' => "Tags could not be updated",
@@ -87,6 +92,14 @@ return [
         'creation' => "Place has been successfully created",
         'update' => "Place has been successfully updated",
         'deletion' => "Place has been successfully delete"
+      ],
+      'notification' => [
+        'creation' => "Notification has been successfully created",
+        'update' => "Notification has been successfully updated",
+        'deletion' => "Notification has been successfully delete"
+      ],
+      'link' => [
+        'creation' => "Link has been successfully created"
       ]
     ]
 ];

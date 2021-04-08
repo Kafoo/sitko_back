@@ -61,10 +61,32 @@ Route::middleware('auth:api')->group(function(){
 
     Route::apiResource('user', 'App\Http\Controllers\UserController');
 
+    Route::apiResource('notification', 'App\Http\Controllers\NotificationController');
+
+    Route::get('notification/chunk/{chunk}', 'App\Http\Controllers\NotificationController@index');
+
+    Route::put('notification/read/{notification}', 'App\Http\Controllers\NotificationController@read');
+
     Route::apiResource('tags_category', 'App\Http\Controllers\Tags_categoryController');
 
-    Route::put('join/{place_id}', 'App\Http\Controllers\PlaceController@join');
+    Route::put('link/request/place/{place}', 'App\Http\Controllers\PlaceController@requestLink');
 
-    Route::put('leave/{place_id}', 'App\Http\Controllers\PlaceController@leave');
+    Route::put('link/unlink/place/{place}', 'App\Http\Controllers\PlaceController@unlink');
+
+    Route::put('link/cancel/place/{place}', 'App\Http\Controllers\PlaceController@cancelLink');
+
+    Route::put('link/confirm/place/{place}', 'App\Http\Controllers\PlaceController@confirmLink');
+
+    Route::put('link/decline/place/{place}', 'App\Http\Controllers\PlaceController@declineLink');
+
+    Route::put('link/request/user/{user}', 'App\Http\Controllers\UserController@requestLink');
+
+    Route::put('link/unlink/user/{user}', 'App\Http\Controllers\UserController@unlink');
+
+    Route::put('link/cancel/user/{user}', 'App\Http\Controllers\UserController@cancelLink');
+
+    Route::put('link/confirm/user/{user}', 'App\Http\Controllers\UserController@confirmLink');
+
+    Route::put('link/decline/user/{user}', 'App\Http\Controllers\UserController@declineLink');
 
 });

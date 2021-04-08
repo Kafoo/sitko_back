@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\DBAL\TimestampType;
 use Illuminate\Support\Str;
 
 return [
@@ -34,6 +35,13 @@ return [
     */
 
     'connections' => [
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => '{default}',
+            'retry_after' => 90,
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
@@ -143,5 +151,16 @@ return [
         ],
 
     ],
+
+    /*----------------
+    DBAL to edit column in migrations
+    */
+
+    'dbal' => [
+        'types' => [
+            'timestamp' => TimestampType::class,
+        ],
+    ],
+
 
 ];

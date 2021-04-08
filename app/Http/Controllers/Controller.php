@@ -37,5 +37,11 @@ class Controller extends BaseController
 
     }
 
+    protected function beginTransaction(){
+        
+        DB::beginTransaction();
+        $this->transactionLevel = DB::transactionLevel();
+
+    }
 
 }

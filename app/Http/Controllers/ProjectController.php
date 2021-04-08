@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
 
@@ -9,6 +10,7 @@ class ProjectController extends ProjentController
 {
  
     public $projent_type = 'project';
+    public $resource = ProjectResource::class;
 
     public $model;
 

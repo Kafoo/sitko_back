@@ -6,16 +6,20 @@ use App\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Traits\MediaManager;
+use App\Traits\Notifiable;
 use App\Traits\Taggable;
+use App\Traits\Relationable;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, HasRoles, Notifiable, HasApiTokens;
+    use HasPermissions;
     use MediaManager;
-    use Taggable;
+    use Taggable, Relationable;
 
     /**
      * The attributes that are mass assignable.
@@ -54,12 +58,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
 	public function place()
 	{
-			return $this->hasOne('App\Models\Place', 'author_id');
+        return $this->hasOne('App\Models\Place', 'author_id');
 	}
 
 	public function joined_places()
 	{
-			return $this->belongsToMany('App\Models\Place');
+        return $this->belongsToMany('App\Models\Place');
 	}
 
     public function image()

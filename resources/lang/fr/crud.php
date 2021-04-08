@@ -40,6 +40,11 @@ return [
         'update' => "Erreur lors de la modification du lieu",
         'deletion' => "Erreur lors de la suppression du lieu"
       ],
+      'notification' => [
+        'creation' => "Erreur lors de la création de la notification",
+        'update' => "Erreur lors de la modification de la notification",
+        'deletion' => "Erreur lors de la suppression de la notification"
+      ],
       'events' => [
         'creation' => "Les événements n'ont pas pu être créés",
         'update' => "Les événements n'ont pas pu être modifiés",
@@ -82,6 +87,14 @@ return [
         'creation' => "Lieu créé avec succès",
         'update' => "Lieu modifié avec succès",
         'deletion' => "Lieu supprimé avec succès"
+      ],
+      'notification' => [
+        'creation' => "Notification créée avec succès",
+        'update' => "Notification modifiée avec succès",
+        'deletion' => "Notification supprimée avec succès"
+      ],
+      'link' => [
+        'creation' => "Lien créé avec succès"
       ]
     ]
 
