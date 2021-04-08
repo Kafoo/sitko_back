@@ -14,7 +14,7 @@ trait LinkableController {
                                 ['notifiable_id', $notifiable_id],
                                 ['type', 'App\Notifications\LinkRequest'],
                                 ['notifiable_type', 'user'],
-                                ['data->requesting_id', auth()->user()->id]
+                                ['data','LIKE','%"requesting_id":"'.auth()->user()->id.'"%']
                             ])->orderBy('created_at', 'desc')->first();
     }
 
