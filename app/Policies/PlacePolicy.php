@@ -67,7 +67,6 @@ class PlacePolicy
      */
     public function link(User $user, Place $place)
     {
-        return true;
         return $user->id !== $place->author_id;
     }
 
