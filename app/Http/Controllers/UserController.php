@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\OtherUserResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return new OtherUserResource($user);
+        return new UserResource($user);
     }
 
 

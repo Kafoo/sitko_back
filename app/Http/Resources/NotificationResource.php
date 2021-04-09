@@ -43,7 +43,7 @@ class NotificationResource extends JsonResource
     private function getRequested()
     {
         if ($this->data['requested_type'] === 'user') {
-            return new UserResource(auth()->user());
+            return new AuthResource(auth()->user());
         }elseif ($this->data['requested_type'] === 'place'){
             return new PlaceResource(Place::find($this->data['requested_id']));
         }

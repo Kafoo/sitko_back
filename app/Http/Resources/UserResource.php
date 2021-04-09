@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 
 class UserResource extends JsonResource
 {
@@ -17,15 +18,25 @@ class UserResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'email' => $this->email,
             'name' => $this->name,
             'last_name' => $this->last_name,
             'image' => $this->image,
-            'email_verified_at' => $this->email_verified_at,
-            'place' => $this->place,
-            'linked_places' => $this->getLinkedPlaces(),
-            'linked_users' => $this->getLinkedUsers(),
-            'tags' => $this->tags
+            'tags' => $this->tags,
+            'link' => $this->getLinkState(),
+            'can' => $this->permissions(),
+        ];
+    }
+
+    /**
+     * Returns the permissions of the resource.
+     *
+     * @return array
+     */
+    protected function permissions()
+    {
+        return [
+            'update' => Gate::allows('update', $this->resource),
+            'link' => Gate::allows('link', $this->resource),
         ];
     }
 
