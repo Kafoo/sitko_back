@@ -39,8 +39,6 @@ trait Relationable
   public function getLink($related)
   {
 
-    $related = auth()->user();
-
     return DB::table('relationships')
         ->where(function ($query) use ($related) {
             $query->where('first_id', $this->id)
@@ -54,10 +52,18 @@ trait Relationable
 
   public function getLinkState(){
 
-    $link = $this->getLink(auth()->user());
+    $link = $this->getLink(auth()->user())->first();
 
-    if ($link->count() > 0) {
-      return $link->first()->state;
+    if ($link) {
+      if ($link->state === "pending") {
+        if ($link->first_id === auth()->user()->id) {
+          return "requesting";
+        } else{
+          return "requested";
+        }
+      } else {
+        return $link->state;
+      }
     }else{
       return null;
     }

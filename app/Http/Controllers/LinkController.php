@@ -1,27 +1,27 @@
 <?php
  
-namespace App\Traits\Controllers;
+namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-trait LinkableController {
+class LinkController extends Controller {
 
-    private function getLinkNotification($notifiable_id){
+    private function getLinkNotification($notifiable_id, $notifying_id){
       return Notification::where([
                                 ['notifiable_id', $notifiable_id],
                                 ['type', 'App\Notifications\LinkRequest'],
                                 ['notifiable_type', 'user'],
-                                ['data->requesting_id', auth()->user()->id]
+                                ['data->requesting_id', $notifying_id]
                             ])->orderBy('created_at', 'desc')->first();
     }
 
-    public function requestLink($requested_id) 
+    public function request(Request $request) 
     {
-
-        $requested = $this->model::find($requested_id);
 
         //TOTRANSLATE
         $fail_message = 'Could not request link';
@@ -29,6 +29,9 @@ trait LinkableController {
         $this->beginTransaction();
 
         try {
+
+            $requested_model = Relation::morphMap()[$request->essence];
+            $requested = $requested_model::find($request->id);
             
             if ($requested->getLinkState()) {
                 throw new \Exception("Error Processing Request", 1);
@@ -49,8 +52,6 @@ trait LinkableController {
                                 ]);
 
                 $relation->save();
-
-
 
             }
 
@@ -75,10 +76,8 @@ trait LinkableController {
 
     }
 
-    public function cancelLink($requested_id) 
+    public function cancel(Request $request) 
     {
-
-        $requested = $this->model::find($requested_id);
 
         //TOTRANSLATE
         $fail_message = 'Could not cancel request';
@@ -86,6 +85,9 @@ trait LinkableController {
         $this->beginTransaction();
 
         try {
+
+            $requested_model = Relation::morphMap()[$request->essence];
+            $requested = $requested_model::find($request->id);
             
             $requested->getLink(auth()->user())->delete();
             
@@ -95,7 +97,9 @@ trait LinkableController {
               $notifiable_id = $requested->id;
             }
             
-            $notification = $this->getLinkNotification($notifiable_id);
+            $notifying_id = auth()->user()->id;
+
+            $notification = $this->getLinkNotification($notifiable_id, $notifying_id);
 
             if ($notification) {
                 $notification->delete();
@@ -114,10 +118,8 @@ trait LinkableController {
 
     } 
 
-    public function unlink($requested_id) 
+    public function unlink(Request $request) 
     {
-
-        $requested = $this->model::find($requested_id);
 
         //TOTRANSLATE
         $fail_message = 'Could not unlink';
@@ -125,6 +127,9 @@ trait LinkableController {
         $this->beginTransaction();
 
         try {
+
+            $requested_model = Relation::morphMap()[$request->essence];
+            $requested = $requested_model::find($request->id);
             
             $requested->getLink(auth()->user())->delete();
 
@@ -141,10 +146,8 @@ trait LinkableController {
 
     }
 
-    public function confirmLink($requested_id) 
+    public function confirm(Request $request) 
     {
-
-        $requested = $this->model::find($requested_id);
 
         //TOTRANSLATE
         $fail_message = 'Could not confirm link';
@@ -152,21 +155,21 @@ trait LinkableController {
         $this->beginTransaction();
 
         try {
-            
-            $requested->getLink(auth()->user())->update(['state' => "confirmed"]);
 
-            if ($requested->getMorphClass() === "place") {
-              $notifiable_id = $requested->author->id;
-            } else {
-              $notifiable_id = $requested->id;
-            }
+            $requesting_model = Relation::morphMap()[$request->requesting['essence']];
+            $requesting = $requesting_model::find($request->requesting['id']);
+
+            $requested_model = Relation::morphMap()[$request->requested['essence']];
+            $requested = $requested_model::find($request->requested['id']);
             
-            $notification = $this->getLinkNotification($notifiable_id);
+            $requested->getLink($requesting)->update(['state' => "confirmed"]);
+            
+            $notification = $this->getLinkNotification(auth()->user()->id, $requesting->id);
             $notification->timestamps = false;
 
             $now = Carbon::now()->format('Y-m-d H:i:s.u');
 
-            $notification->update(['data->state' => 'confirmed', 'updated_at' => $now]);
+            $notification->update(['data->state' => 'confirmed', 'read_at' => $now, 'updated_at' => $now]);
 
         } catch (\Exception $e) {
 
@@ -182,10 +185,8 @@ trait LinkableController {
 
     }
 
-    public function declineLink($requested_id) 
+    public function decline(Request $request) 
     {
-
-        $requested = $this->model::find($requested_id);
 
         //TOTRANSLATE
         $fail_message = 'Could not decline link';
@@ -194,18 +195,20 @@ trait LinkableController {
 
         try {
 
-            $requested->getLink(auth()->user())->delete();
+            $requesting_model = Relation::morphMap()[$request->requesting['essence']];
+            $requesting = $requesting_model::find($request->requesting['id']);
 
-            if ($requested->getMorphClass() === "place") {
-              $notifiable_id = $requested->author->id;
-            } else {
-              $notifiable_id = $requested->id;
-            }
+            $requested_model = Relation::morphMap()[$request->requested['essence']];
+            $requested = $requested_model::find($request->requested['id']);
+
+            $requested->getLink($requesting)->delete();
             
-            $notification = $this->getLinkNotification($notifiable_id);
+            $notification = $this->getLinkNotification(auth()->user()->id, $requesting->id);
+            $notification->timestamps = false;
 
-            $notification->update(['data->state' => 'declined']);
+            $now = Carbon::now()->format('Y-m-d H:i:s.u');
 
+            $notification->update(['data->state' => 'declined', 'read_at' => $now, 'updated_at' => $now]);
 
         } catch (\Exception $e) {
 

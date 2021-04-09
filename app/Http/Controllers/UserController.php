@@ -7,13 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\Image;
-use App\Traits\Controllers\LinkableController;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-
-    use LinkableController;
 
     protected $model = User::class;
 

@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Place;
 use App\Http\Resources\PlaceResource;
-use App\Traits\Controllers\LinkableController;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PlaceController extends Controller
 {
-
-    use LinkableController;
 
     protected $model = Place::class;
 

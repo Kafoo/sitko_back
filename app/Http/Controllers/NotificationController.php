@@ -20,8 +20,7 @@ class NotificationController extends Controller
     {
     
         if ($chunk) {
-            return NotificationResource::collection(auth()->user()->notifications->whereNull('read_at')->take($chunk))
-                ->merge(NotificationResource::collection(auth()->user()->notifications->whereNotNull('read_at')->take($chunk)));
+            return NotificationResource::collection(auth()->user()->notifications->take($chunk));
         }else{
             return NotificationResource::collection(auth()->user()->notifications);
         }

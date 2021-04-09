@@ -69,24 +69,14 @@ Route::middleware('auth:api')->group(function(){
 
     Route::apiResource('tags_category', 'App\Http\Controllers\Tags_categoryController');
 
-    Route::put('link/request/place/{place}', 'App\Http\Controllers\PlaceController@requestLink');
+    Route::put('link/request', 'App\Http\Controllers\LinkController@request');
 
-    Route::put('link/unlink/place/{place}', 'App\Http\Controllers\PlaceController@unlink');
+    Route::put('link/unlink', 'App\Http\Controllers\LinkController@unlink');
 
-    Route::put('link/cancel/place/{place}', 'App\Http\Controllers\PlaceController@cancelLink');
+    Route::put('link/cancel', 'App\Http\Controllers\LinkController@cancel');
 
-    Route::put('link/confirm/place/{place}', 'App\Http\Controllers\PlaceController@confirmLink');
+    Route::put('link/confirm', 'App\Http\Controllers\LinkController@confirm');
 
-    Route::put('link/decline/place/{place}', 'App\Http\Controllers\PlaceController@declineLink');
-
-    Route::put('link/request/user/{user}', 'App\Http\Controllers\UserController@requestLink');
-
-    Route::put('link/unlink/user/{user}', 'App\Http\Controllers\UserController@unlink');
-
-    Route::put('link/cancel/user/{user}', 'App\Http\Controllers\UserController@cancelLink');
-
-    Route::put('link/confirm/user/{user}', 'App\Http\Controllers\UserController@confirmLink');
-
-    Route::put('link/decline/user/{user}', 'App\Http\Controllers\UserController@declineLink');
+    Route::put('link/decline', 'App\Http\Controllers\LinkController@decline');
 
 });
