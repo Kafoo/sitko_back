@@ -39,7 +39,7 @@ trait Relationable
   public function getLink($related)
   {
 
-    return DB::table('relationships')
+    $relation = DB::table('relationships')
         ->where(function ($query) use ($related) {
             $query->where('first_id', $this->id)
                 ->where('second_id', $related->id);
@@ -48,6 +48,8 @@ trait Relationable
             $query->where('second_id', $this->id)
                 ->where('first_id', $related->id);	
         });
+
+    return $relation;
   }
 
   public function getLinkState(){

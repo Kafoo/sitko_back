@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 class LinkController extends Controller {
 
-    private function getLinkNotification($notifiable_id, $notifying_id){
+    private function getLinkNotification($requesting, $requested){
       return Notification::where([
-                                ['notifiable_id', $notifiable_id],
                                 ['type', 'App\Notifications\LinkRequest'],
-                                ['notifiable_type', 'user'],
-                                ['data->requesting_id', $notifying_id]
+                                ['data->requesting_id', $requesting->id],
+                                ['data->requesting_type', $requesting->getMorphClass()],
+                                ['data->requested_id', $requested->id],
+                                ['data->requested_type', $requested->getMorphClass()],
                             ])->orderBy('created_at', 'desc')->first();
     }
 
@@ -86,20 +87,22 @@ class LinkController extends Controller {
 
         try {
 
-            $requested_model = Relation::morphMap()[$request->essence];
-            $requested = $requested_model::find($request->id);
-            
-            $requested->getLink(auth()->user())->delete();
-            
-            if ($requested->getMorphClass() === "place") {
-              $notifiable_id = $requested->author->id;
-            } else {
-              $notifiable_id = $requested->id;
-            }
-            
-            $notifying_id = auth()->user()->id;
+            $requesting_model = Relation::morphMap()[$request->requesting['essence']];
+            $requesting = $requesting_model::find($request->requesting['id']);
 
-            $notification = $this->getLinkNotification($notifiable_id, $notifying_id);
+            $requested_model = Relation::morphMap()[$request->requested['essence']];
+            $requested = $requested_model::find($request->requested['id']);
+
+            $relation = $requested->getLink($requesting);
+
+            if (!$relation) {
+                throw new \Exception("Error Processing Request", 1);
+            } else{
+                $relation->delete();
+            }
+
+
+            $notification = $this->getLinkNotification($requesting, $requested);
 
             if ($notification) {
                 $notification->delete();
@@ -164,7 +167,7 @@ class LinkController extends Controller {
             
             $requested->getLink($requesting)->update(['state' => "confirmed"]);
             
-            $notification = $this->getLinkNotification(auth()->user()->id, $requesting->id);
+            $notification = $this->getLinkNotification($requesting, $requested);
             $notification->timestamps = false;
 
             $now = Carbon::now()->format('Y-m-d H:i:s.u');
@@ -203,7 +206,7 @@ class LinkController extends Controller {
 
             $requested->getLink($requesting)->delete();
             
-            $notification = $this->getLinkNotification(auth()->user()->id, $requesting->id);
+            $notification = $this->getLinkNotification($requesting, $requested);
             $notification->timestamps = false;
 
             $now = Carbon::now()->format('Y-m-d H:i:s.u');
