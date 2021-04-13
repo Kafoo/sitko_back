@@ -22,7 +22,7 @@ class PlaceResource extends JsonResource
             'author' => $this->author,
             'name' => $this->name,
             'description' => $this->description,
-            'localization' => json_decode($this->localization),
+            'localization' => $this->localization,
             'image' => $this->image,
             'tags' => $this->tags,
             'link' => $this->getLinkState(),

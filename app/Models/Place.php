@@ -27,6 +27,10 @@ class Place extends Model
 		"localization"
 	];
 
+protected $casts = [
+    'localization' => 'json',
+];
+
 	/**
 		* The attributes that should be hidden for arrays.
 		*
