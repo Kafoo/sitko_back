@@ -23,7 +23,8 @@ class Place extends Model
 	protected $fillable = [
 		'name',
 		'description',
-		'author_id'
+		'author_id',
+		"localization"
 	];
 
 	/**

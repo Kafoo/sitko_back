@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Place;
 use App\Http\Resources\PlaceResource;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -84,7 +85,7 @@ class PlaceController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.place.creation'),
-            'place' => $newPlace
+            'place' => new PlaceResource($newPlace)
         ], 200);
     }
 
@@ -130,7 +131,20 @@ class PlaceController extends Controller
 
         try {                  
 
-            $editedPlace->image->change($request->image);
+            $hadImage = Image::where('imageable_id', $editedPlace->id)->count() > 0;
+
+            //If new image exists
+            if ($request->image) {
+                //If old image exists
+                if ($hadImage){
+                    $editedPlace->image->change($request->image);
+                }else{
+                    $editedPlace->storeImage($request->image);
+                }
+            }else{
+
+                $editedPlace->deleteImage();
+            }
 
         } catch (\Exception $e) {
 
@@ -154,7 +168,7 @@ class PlaceController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.place.update'),
-            'place' => $editedPlace
+            'place' => new PlaceResource($editedPlace)
         ], 200);
     }
 

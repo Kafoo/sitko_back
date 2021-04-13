@@ -22,7 +22,7 @@ class AuthResource extends JsonResource
             'last_name' => $this->last_name,
             'image' => $this->image,
             'email_verified_at' => $this->email_verified_at,
-            'place' => $this->place,
+            'place' => new PlaceResource($this->place),
             'linked_places' => $this->getLinkedPlaces(),
             'linked_users' => $this->getLinkedUsers(),
             'tags' => $this->tags
