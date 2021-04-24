@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Auth;
+
 trait Projent
 {
 
@@ -15,14 +17,48 @@ trait Projent
         return $this->belongsTo('App\Models\User', 'author_id');
     }
 
-    public function caldates()
+    public static function create(array $attributes = [])
     {
-        return $this->morphMany('App\Models\Caldate', 'child');
+
+        $model = static::query()->create($attributes + ['author_id' => Auth::id()]);
+
+        $model->storeCaldates($attributes['caldates']);
+
+        $model->storeImage($attributes['image']);
+
+        $model->storeTags($attributes['tags']);
+
+        return $model;
+
     }
 
-    public function image()
+    public function update(array $attributes = [], array $options = [])
     {
-        return $this->morphOne('App\Models\Image', 'imageable');
+
+        $response = parent::update($attributes, $options);
+
+        $this->updateCaldates($attributes['caldates']);
+
+        $this->updateImage($attributes['image']);
+
+        $this->updateTags($attributes['tags']);
+
+        return $response;
+
+    }
+
+    public function delete()
+    {
+
+        $this->deleteCaldates();
+
+        $this->deleteImage();
+
+        $this->deleteTags();
+
+        $response = parent::delete();
+
+        return $response;
     }
 
 }

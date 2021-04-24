@@ -7,10 +7,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
-use App\Traits\MediaManager;
+use App\Traits\Imageable;
 use App\Traits\Notifiable;
 use App\Traits\Taggable;
 use App\Traits\Relationable;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -18,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, HasRoles, Notifiable, HasApiTokens;
     use HasPermissions;
-    use MediaManager;
+    use Imageable;
     use Taggable, Relationable;
 
     /**
@@ -64,14 +65,43 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany('App\Models\Place');
 	}
 
-    public function image()
-    {
-        return $this->morphOne('App\Models\Image', 'imageable');
-    }
-
     public function sendEmailVerificationNotification()
     {
         $this->notify(new VerifyEmail());
     }
-    
+
+    public function update(array $attributes = [], array $options = [])
+    {
+
+        $arr = [
+            'name'=> $attributes['name'],
+            'last_name'=> $attributes['last_name'],
+            'email'=> $attributes['email']
+        ];
+
+        if ($attributes['password']) {
+            $arr['password'] = Hash::make($attributes['password']);
+        }
+
+        $response = parent::update($arr, $options);
+
+        $this->updateImage($attributes['image']);
+
+        $this->updateTags($attributes['tags']);
+
+        return $response;
+    }
+
+    public function delete()
+    {
+
+        $this->deleteImage();
+
+        $this->deleteTags();
+
+        $response = parent::delete();
+
+        return $response;
+    }
+
 }

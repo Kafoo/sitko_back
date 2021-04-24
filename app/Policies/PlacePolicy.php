@@ -30,7 +30,15 @@ class PlacePolicy
      */
     public function view(User $user, Place $place)
     {
-        //
+        if ($place->author_id == $user->id) {
+            $maxVisibility = 3 ;
+        } else if ($place->author->isLinked($user)) {
+            $maxVisibility = 2;
+        } else {
+            $maxVisibility = 1;
+        }
+
+        return $place->visibility <= $maxVisibility;
     }
 
     /**

@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\Caldatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\MediaManager;
+use App\Traits\Imageable;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Taggable;
 use App\Traits\Projent;
-use Illuminate\Notifications\Notifiable;
 
 class Project extends Model
 {
     use HasFactory;
-    use MediaManager;
+    use Imageable;
+    use Caldatable;
     use Projent;
     use Taggable;
 
@@ -26,7 +27,8 @@ class Project extends Model
     	'type',
     	'description',
         'author_id',
-        'place_id'
+        'place_id',
+        'visibility'
     ];
 
     /**
@@ -37,5 +39,6 @@ class Project extends Model
     protected $hidden = [
         //
     ];
+
 
 }

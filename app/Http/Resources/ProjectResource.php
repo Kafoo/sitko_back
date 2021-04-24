@@ -26,9 +26,10 @@ class ProjectResource extends JsonResource
             'tags' => $this->tags,
             'place' => $this->place,
             'place_id' => $this->place_id,
+            'visibility' => $this->visibility,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'can' => $this->permissions(),
+            'can' => $this->permissions()
         ];
     }
 
@@ -40,7 +41,8 @@ class ProjectResource extends JsonResource
     protected function permissions()
     {
         return [
-            'update' => Gate::allows('update', $this->resource)
+            'update' => Gate::allows('update', $this->resource),
+            'view' => Gate::allows('view', $this->resource)
         ];
     }
 }

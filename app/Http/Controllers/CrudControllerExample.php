@@ -13,7 +13,7 @@ class PlaceController extends Controller
 
         $fail_message = trans('crud.fail.entity.action');
 
-        $this->beginTransaction();
+       DB::beginTransaction();
 
         # Whatever
 
@@ -23,7 +23,7 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message, trans('moreInfo'));
+            return $this->exceptionResponse($e, $fail_message, trans('moreInfo'));
         }
 
         # Success

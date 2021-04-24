@@ -71,5 +71,16 @@ trait Relationable
     }
   }
 
+  public function isLinked($related){
+  
+    $isLinked = false;
+
+    if ($this->getLink($related)->count() > 0) {
+      $isLinked = true;
+    }
+
+    return $isLinked;
+
+  }
 
 }

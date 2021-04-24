@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Place;
-use App\Models\Caldate;
 use Illuminate\Support\Facades\DB;
-use App\Models\Image;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 class ProjentController extends Controller
 {
@@ -17,38 +15,46 @@ class ProjentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function projentIndex($request, $place_id)
+    public function projentIndex($request, $place_id = null)
     {
 
         #Index by place
 
         $entities = $this->projent_type.'s';
 
+        $projents = [];
 
         if ($place_id) {
 
+            $place = Place::find($place_id);
+
             if ($request->filter == 'incoming') {
 
-                return $this->resource::collection($this->incoming(Place::find($place_id)->$entities())->get());
+                $projents = $this->incoming($place->$entities())->get();
 
             }else{
-              return $this->resource::collection(Place::find($place_id)->$entities()->get());
-            }
 
+                $projents = $place->$entities()->get();
+            }
 
         # Index all
 
         }else{
 
             if ($request->filter == 'incoming') {
-            
-              return $this->resource::collection($this->incoming($this->model->with('place'))->get());
+
+                $projents = $this->incoming($this->model->with('place'))->get();
 
             }else{
-              return $this->resource::collection($this->model->with('place')->get());
+            
+                $projents = $this->model->with('place')->get();
             }
-
         }
+
+        $projents = $this->visibilityFilter($projents);
+
+        return $this->resource::collection($projents);
+
     }
 
     /**
@@ -60,62 +66,16 @@ class ProjentController extends Controller
     public function projentStore($request)
     {
 
-       $fail_message = trans('crud.fail.'.$this->projent_type.'.creation');
-
-        $this->beginTransaction();
-
-        # Creating Project
+        DB::beginTransaction();
 
         try {
 
-            $author_id = Auth::id();
-
-            $newProjent = $this->model->create($request->all() + ['author_id' => $author_id]);
-            $newProjent->load('place');
-            $newProjent->load('author');
+            $newProjent = $this->model::create($request->all());
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.'.$this->projent_type.'.creation'));
         }
-
-        #  Creating related caldates
-
-        try {
-
-            $newProjent->storeCaldates($request->get('caldates'));
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.creation'));
-        }
-        
-        # Uploading image to Cloudinary
-
-        if ($request->image !== null) {
-
-            try {                
-
-                $newProjent->storeImage($request->image);
-
-            } catch (\Exception $e) {
-
-                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
-            }
-        }
-
-        # Link/Create Tags
-
-        try {
-
-            $newProjent->updateTags($request->tags);
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.creation'));
-        }
-
-        # Success
 
         DB::commit();
 
@@ -134,7 +94,12 @@ class ProjentController extends Controller
     public function projentShow($id)
     {
         $projent = $this->model->find($id);
+
+        Gate::authorize('view', $projent);
+
         return new $this->resource($projent);
+
+
     }
 
 
@@ -148,78 +113,22 @@ class ProjentController extends Controller
     public function projentUpdate($request, $projent)
     {
 
-        $fail_message = trans('crud.fail.'.$this->projent_type.'.update');
-
-        $this->beginTransaction();
-
-        # Update project
+        DB::beginTransaction();
 
         try {       
 
-            $editedProjent = tap($projent)->update($request->all());
+            tap($projent)->update($request->all());
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.'.$this->projent_type.'.update'));
         }
-        
-        # Update related image (Database + Cloudinary)
-
-        try {                
-
-            $hadImage = Image::where('imageable_id', $editedProjent->id)->count() > 0;
-
-            //If new image exists
-            if ($request->image) {
-                //If old image exists
-                if ($hadImage){
-                    $editedProjent->image->change($request->image);
-                }else{
-                    $editedProjent->storeImage($request->image);
-                }
-            }else{
-
-                $editedProjent->deleteImage();
-            }
-            
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
-        }
-
-        # Update related caldates
-
-        try {
-            
-            if ($caldates = Caldate::where('child_id', $projent->id)) {
-                $caldates->delete();
-            }
-
-            $editedProjent->storeCaldates($request->get('caldates'));
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.update'));
-        }
-            
-        # Update related tags
-
-        try {
-
-            $editedProjent->updateTags($request->tags);
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
-        }
-
-        # Success
 
         DB::commit();
+
         return response()->json([
             'success' => trans('crud.success.'.$this->projent_type.'.update'),
-            $this->projent_type => new $this->resource($editedProjent)
+            $this->projent_type => new $this->resource($projent)
         ], 200);
     }
 
@@ -233,50 +142,7 @@ class ProjentController extends Controller
     public function projentDestroy($projent)
     {
 
-        $fail_message = trans('crud.fail.'.$this->projent_type.'.deletion');
-
-        $this->beginTransaction();
-
-        # Delete related caldates
-
-        try {
-            
-            if ($caldates = Caldate::where('child_id', $projent->id)) {
-               $caldates->delete();
-            }
-
-        } catch (\Exception $e) {
-            
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.caldates.deletion'));
-
-        }
-
-        # Delete related image (Database + Cloudinary)
-
-        try {
-            
-            $projent->deleteImage();
-
-        } catch (\Exception $e) {
-            
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
-
-        }
-
-        # Delete related tags
-
-        try {
-
-            $projent->updateTags([]);
-
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
-
-        } 
-
-        # Delete project
+        DB::beginTransaction();
 
         try {
             
@@ -284,10 +150,8 @@ class ProjentController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.'.$this->projent_type.'.deletion'));
         }
-
-        # Success
 
         DB::commit();
 

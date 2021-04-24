@@ -27,7 +27,7 @@ class LinkController extends Controller {
         //TOTRANSLATE
         $fail_message = 'Could not request link';
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         try {
 
@@ -59,7 +59,7 @@ class LinkController extends Controller {
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e,  $fail_message);
+            return $this->exceptionResponse($e,  $fail_message);
         }
         
         if ($requested->getMorphClass() === "place") {
@@ -83,7 +83,7 @@ class LinkController extends Controller {
         //TOTRANSLATE
         $fail_message = 'Could not cancel request';
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         try {
 
@@ -110,7 +110,7 @@ class LinkController extends Controller {
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e,  $fail_message);
+            return $this->exceptionResponse($e,  $fail_message);
         }
     
         DB::commit();
@@ -127,7 +127,7 @@ class LinkController extends Controller {
         //TOTRANSLATE
         $fail_message = 'Could not unlink';
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         try {
 
@@ -138,7 +138,7 @@ class LinkController extends Controller {
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e,  $fail_message);
+            return $this->exceptionResponse($e,  $fail_message);
         }
     
         DB::commit();
@@ -155,7 +155,7 @@ class LinkController extends Controller {
         //TOTRANSLATE
         $fail_message = 'Could not confirm link';
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         try {
 
@@ -176,7 +176,7 @@ class LinkController extends Controller {
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e,  $fail_message);
+            return $this->exceptionResponse($e,  $fail_message);
         }
     
         DB::commit();
@@ -194,7 +194,7 @@ class LinkController extends Controller {
         //TOTRANSLATE
         $fail_message = 'Could not decline link';
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         try {
 
@@ -215,7 +215,7 @@ class LinkController extends Controller {
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e,  $fail_message);
+            return $this->exceptionResponse($e,  $fail_message);
         }
     
         DB::commit();

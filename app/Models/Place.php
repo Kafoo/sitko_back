@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\MediaManager;
+use App\Traits\Imageable;
 use App\Traits\Relationable;
 use App\Traits\Taggable;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Place extends Model
 {
 	use HasFactory;
-	use MediaManager;
+	use Imageable ;
   use Taggable, Relationable;
 
 	/**
@@ -24,11 +25,12 @@ class Place extends Model
 		'name',
 		'description',
 		'author_id',
-		"localization"
+		'location',
+		'visibility'
 	];
 
 protected $casts = [
-    'localization' => 'json',
+    'location' => 'json',
 ];
 
 	/**
@@ -80,9 +82,48 @@ protected $casts = [
 			return $this->hasMany('App\Models\Caldate');
 	}
 
-	public function image()
+	public static function create(array $attributes = [])
 	{
-			return $this->morphOne('App\Models\Image', 'imageable');
+
+			$model = static::query()->create($attributes + ['author_id' => Auth::id()]);
+
+			$model->storeImage($attributes['image']);
+
+			$model->storeTags($attributes['tags']);
+
+			return $model;
+
+	}
+
+	public function update(array $attributes = [], array $options = [])
+	{
+
+			$response = parent::update($attributes, $options);
+
+			$this->updateImage($attributes['image']);
+
+			$this->updateTags($attributes['tags']);
+
+			return $response;
+
+	}
+
+	public function delete()
+	{
+
+			$this->deleteImage();
+
+			$this->deleteTags();
+
+			$this->projects->each->delete();
+
+			$this->events->each->delete();
+
+			$this->notes->each->delete();
+
+			$response = parent::delete();
+
+			return $response;
 	}
 
 }

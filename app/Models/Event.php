@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\Caldatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\MediaManager;
+use App\Traits\Imageable;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Taggable;
 use App\Traits\Projent;
 
 class Event extends Model {
     use HasFactory;
-    use MediaManager;
+    use Imageable;
+    use Caldatable;
     use Projent;
     use Taggable;
 
@@ -24,7 +26,8 @@ class Event extends Model {
     	'type',
     	'description',
         'author_id',
-        'place_id'
+        'place_id',
+        'visibility'
     ];
 
     /**

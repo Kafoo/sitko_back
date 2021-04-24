@@ -77,7 +77,7 @@ class NotificationController extends Controller
 
         $fail_message = trans('crud.fail.notification.deletion');
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         # Delete notification
 
@@ -92,7 +92,7 @@ class NotificationController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, $fail_message);
         }
 
         # Success
@@ -116,7 +116,7 @@ class NotificationController extends Controller
 
         $fail_message = trans('crud.fail.notification.deletion');
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         # Delete notification
 

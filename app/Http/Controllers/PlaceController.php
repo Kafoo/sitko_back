@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PlaceRequest;
 use App\Models\Place;
 use App\Http\Resources\PlaceResource;
-use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class PlaceController extends Controller
 {
@@ -21,7 +21,10 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return PlaceResource::collection(Place::all());
+        $places = $this->visibilityFilter(Place::all());
+
+        return PlaceResource::collection($places);
+
     }
 
     /**
@@ -30,56 +33,19 @@ class PlaceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PlaceRequest $request)
     {
 
-       $fail_message = trans('crud.fail.place.creation');
-
-        $this->beginTransaction();
-
-        # Creating Place
+        DB::beginTransaction();
 
         try {
 
-            $author_id = Auth::id();
-
-            $newPlace = Place::create($request->all() + ['author_id' => $author_id]);
-            $newPlace->load('author');
-
+            $newPlace = Place::create($request->all());
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.place.creation'));
         }
-        
-        # Uploading image to Cloudinary
-
-        if ($request->image !== null) {
-
-            try {
-
-                $newPlace->storeImage($request->image);
-
-            } catch (\Exception $e) {
-
-                return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.creation'));
-            }
-        }
-
-        # Link/Create Tags
-
-        try {
-
-            $newPlace->updateTags($request->tags);
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.creation'));
-        }
-
-
-
-        # Success
 
         DB::commit();
 
@@ -98,8 +64,12 @@ class PlaceController extends Controller
      */
     public function show($placeId)
     {
+        $place = Place::find($placeId);
 
-        return new PlaceResource(Place::find($placeId));
+        Gate::authorize('view', $place);
+
+        return new PlaceResource($place);
+
     }
 
     /**
@@ -109,14 +79,10 @@ class PlaceController extends Controller
      * @param  \App\Models\Place  $place
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Place $place)
+    public function update(PlaceRequest $request, Place $place)
     {
 
-        $fail_message = trans('crud.fail.place.update');
-
-        $this->beginTransaction();
-
-        # Update place
+        DB::beginTransaction();
 
         try {       
 
@@ -124,45 +90,8 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.place.update'));
         }
-
-        # Update related image (Database + Cloudinary)
-
-        try {                  
-
-            $hadImage = Image::where('imageable_id', $editedPlace->id)->count() > 0;
-
-            //If new image exists
-            if ($request->image) {
-                //If old image exists
-                if ($hadImage){
-                    $editedPlace->image->change($request->image);
-                }else{
-                    $editedPlace->storeImage($request->image);
-                }
-            }else{
-
-                $editedPlace->deleteImage();
-            }
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.update'));
-        }
-
-        # Update related tags
-
-        try {                  
-
-            $editedPlace->updateTags($request->tags);
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.update'));
-        }
-
-        # Success
 
         DB::commit();
 
@@ -181,85 +110,7 @@ class PlaceController extends Controller
     public function destroy(Place $place)
     {
 
-        $fail_message = trans('crud.fail.place.deletion');
-
-        $this->beginTransaction();
-
-        # Delete related image (Database + Cloudinary)
-
-        try {
-            
-            $place->deleteImage();
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.image.deletion'));
-        }
-
-        # Delete related projects
-
-        try {
-
-			$controller = new ProjectController;
-			foreach ($place->projects as $project) {
-				$controller->destroy($project);
-			}
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.projects.deletion'));
-
-        }
-
-        # Delete related events
-
-        try {
-
-			$controller = new EventController;
-			foreach ($place->events as $event) {
-				$controller->destroy($event);
-			}
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.events.deletion'));
-
-        }
-
-        # Delete related notes
-
-        try {
-
-			$controller = new NoteController;
-			foreach ($place->notes as $note) {
-				$controller->destroy($note);
-			}
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.notes.deletion'));
-
-        }
-
-        # Delete related tags
-
-        try {
-
-			foreach ($place->tags as $tag) {
-                if ($tag->custom == '1') {
-    				$tag->delete();
-                }
-			}
-
-            $place->tags()->detach();
-
-        } catch (\Exception $e) {
-
-            return $this->returnOrThrow($e, $fail_message, trans('crud.fail.tags.deletion'));
-
-        } 
-
-        # Delete place
+        DB::beginTransaction();
 
         try {
             
@@ -267,10 +118,8 @@ class PlaceController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, trans('crud.fail.place.deletion'));
         }
-
-        # Success
 
         DB::commit();
 

@@ -4,8 +4,9 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Gate;
 
-class AuthorablePolicy
+class PlaceEntityPolicy
 {
     use HandlesAuthorization;
 
@@ -27,9 +28,22 @@ class AuthorablePolicy
      * @param   $authorable
      * @return mixed
      */
-    public function view(User $user, $authorable)
+    public function view(User $user, $entity)
     {
-        //
+
+        if ($entity->author_id == $user->id) {
+            $maxVisibility = 3 ;
+        } else if ($entity->place->isLinked($user)) {
+            $maxVisibility = 2;
+        } else {
+            $maxVisibility = 1;
+        }
+
+        $canViewPlace = Gate::allows('view', $entity->place);
+        $canViewEntity = $entity->visibility <= $maxVisibility;
+
+        return $canViewPlace && $canViewEntity;
+
     }
 
     /**

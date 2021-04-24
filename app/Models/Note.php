@@ -18,7 +18,8 @@ class Note extends Model
     	'title',
     	'description',
         'place_id',
-        "author_id"
+        'author_id',
+        'visibility'
     ];
 
     public $with = ['place', 'author'];

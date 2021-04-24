@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AuthResource;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class LoginController extends Controller
 
             return response()->json([
                 'token'    => $request->user()->createToken($request->input('device_name'))->accessToken,
-                'user'     => $user
+                'user'     => new AuthResource($user)
             ]);
         }
 

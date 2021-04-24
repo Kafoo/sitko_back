@@ -26,6 +26,7 @@ class EventResource extends JsonResource
             'tags' => $this->tags,
             'place' => $this->place,
             'place_id' => $this->place_id,
+            'visibility' => $this->visibility,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'can' => $this->permissions(),

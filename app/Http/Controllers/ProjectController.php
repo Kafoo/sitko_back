@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use Exception;
 use Illuminate\Http\Request;
 
 class ProjectController extends ProjentController
@@ -37,7 +39,7 @@ class ProjectController extends ProjentController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProjectRequest $request)
     {
 
         return $this->projentStore($request);
@@ -64,7 +66,7 @@ class ProjectController extends ProjentController
      * @param mixed $projent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(ProjectRequest $request, Project $project)
     {
 
         return $this->projentUpdate($request, $project);

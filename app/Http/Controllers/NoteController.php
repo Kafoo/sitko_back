@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\NoteRequest;
 use App\Http\Resources\NoteResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\Place;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class NoteController extends Controller
 {
@@ -21,7 +23,11 @@ class NoteController extends Controller
     public function index(Request $request, $place_id)
     {
 
-        return NoteResource::collection(Place::find($place_id)->notes()->get());
+        $notes = Place::find($place_id)->notes()->get();
+
+        $notes = $this->visibilityFilter($notes);
+
+        return NoteResource::collection($notes);
 
     }
 
@@ -31,25 +37,21 @@ class NoteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(NoteRequest $request)
     {
        $fail_message = trans('crud.fail.note.creation');
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         # Creating Note
 
         try {
 
-            $author_id = Auth::id();
-
-            $newNote = Note::create($request->all() + ['author_id' => $author_id]);
-            $newNote->load('place');
-            $newNote->load('author');
+            $newNote = Note::create($request->all() + ['author_id' => Auth::id()]);
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, $fail_message);
         }
 
         # Success
@@ -69,7 +71,11 @@ class NoteController extends Controller
      */
     public function show($id)
     {
-        return new NoteResource(Note::find($id));
+        $note = Note::find($id);
+
+        Gate::authorize('view', $note);
+
+        return new NoteResource($note);
     }
 
     /**
@@ -79,12 +85,12 @@ class NoteController extends Controller
      * @param  \App\Models\Note  $note
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Note $note)
+    public function update(NoteRequest $request, Note $note)
     {
 
         $fail_message = trans('crud.fail.note.update');
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         # Update note
 
@@ -94,7 +100,7 @@ class NoteController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, $fail_message);
         }
 
         # Success
@@ -117,7 +123,7 @@ class NoteController extends Controller
 
         $fail_message = trans('crud.fail.note.deletion');
 
-        $this->beginTransaction();
+        DB::beginTransaction();
 
         # Delete note
 
@@ -127,7 +133,7 @@ class NoteController extends Controller
 
         } catch (\Exception $e) {
 
-            return $this->returnOrThrow($e, $fail_message);
+            return $this->exceptionResponse($e, $fail_message);
         }
 
         # Success
