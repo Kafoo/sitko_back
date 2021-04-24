@@ -20,6 +20,8 @@ class Controller extends BaseController
 
         if ($e instanceof CustomException) {
             $info = $e->getMessage();
+        }else{
+            $info = '';
         }
 
         return response()->json([
