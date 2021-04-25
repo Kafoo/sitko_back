@@ -55,9 +55,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public $with = ['image', 'tags'];
 
-	public function place()
+	public function places()
 	{
-        return $this->hasOne('App\Models\Place', 'author_id');
+        return $this->hasMany('App\Models\Place', 'author_id');
 	}
 
 	public function joined_places()
@@ -98,6 +98,10 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->deleteImage();
 
         $this->deleteTags();
+
+        $this->clearRelationships();
+
+        $this->clearNotifications();
 
         $response = parent::delete();
 

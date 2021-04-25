@@ -20,4 +20,5 @@ trait Notifiable
 
         return $notifications;
     }
+
 }

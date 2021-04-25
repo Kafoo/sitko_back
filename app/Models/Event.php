@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Traits\Caldatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Imageable;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 use App\Traits\Taggable;
 use App\Traits\Projent;
 
-class Event extends Model {
+class Event extends GlobalModel {
     use HasFactory;
     use Imageable;
     use Caldatable;

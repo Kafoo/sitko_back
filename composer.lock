@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d942fb62d48a41a720d1ff74031efef",
+    "content-hash": "db0f841a93964a48727612196416758b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3784,6 +3784,73 @@
                 }
             ],
             "time": "2020-08-18T17:17:46+00:00"
+        },
+        {
+            "name": "shaffe/laravel-mail-log-channel",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shaffe-fr/laravel-mail-log-channel.git",
+                "reference": "ec662deac2c1d029681c5ff8cf76e0b6aad0d864"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shaffe-fr/laravel-mail-log-channel/zipball/ec662deac2c1d029681c5ff8cf76e0b6aad0d864",
+                "reference": "ec662deac2c1d029681c5ff8cf76e0b6aad0d864",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/bus": "^5.6|^6.0|^7.0|^8.0",
+                "illuminate/contracts": "^5.6|^6.0|^7.0|^8.0",
+                "illuminate/log": "^5.6|^6.0|^7.0|^8.0",
+                "illuminate/mail": "^5.6|^6.0|^7.0|^8.0",
+                "illuminate/queue": "^5.6|^6.0|^7.0|^8.0",
+                "illuminate/support": "^5.6|^6.0|^7.|^8.00"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Shaffe\\MailLogChannel\\MailLogChannelServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Shaffe\\MailLogChannel\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Karel FAILLE",
+                    "email": "shaffe.fr@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Steve Porter",
+                    "email": "steve@designmynight.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A package to support logging via email in Laravel",
+            "homepage": "https://github.com/shaffe-fr/laravel-mail-log-channel",
+            "keywords": [
+                "laravel",
+                "laravel-log-mailer",
+                "laravel-mail-log-channel",
+                "logging",
+                "mail channel",
+                "monolog",
+                "shaffe"
+            ],
+            "support": {
+                "source": "https://github.com/shaffe-fr/laravel-mail-log-channel/tree/v2.1.0"
+            },
+            "time": "2021-02-17T08:45:44+00:00"
         },
         {
             "name": "shrikeh/teapot",

@@ -26,7 +26,8 @@ class ProjectRequest extends GlobalRequest
         return array_merge(
             [
             'title' => 'required|string|max:40',
-            'description' => 'required|string'
+            'description' => 'required|string',
+            'is_done' => 'required|boolean'
             ],
             $this->visibility
         );

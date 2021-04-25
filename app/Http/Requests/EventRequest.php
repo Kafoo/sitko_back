@@ -26,7 +26,8 @@ class EventRequest extends GlobalRequest
         return array_merge(
             [
             'title' => 'required|string|max:40',
-            'description' => 'required|string'
+            'description' => 'required|string',
+            'caldates' => 'required|array|min:1'
             ],
             $this->visibility
         );

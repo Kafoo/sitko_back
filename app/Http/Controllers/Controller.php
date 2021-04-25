@@ -21,13 +21,22 @@ class Controller extends BaseController
         if ($e instanceof CustomException) {
             $info = $e->getMessage();
         }else{
+            if(config('app.debug')){
+
+                return response()->json([
+                    'customMessage' => $message,
+                    'info' => '',
+                    'more' => $e->getMessage()
+                ], 500);    
+            }
             $info = '';
         }
-
+      
         return response()->json([
             'customMessage' => $message,
             'info' => $info
         ], 500);
+
 
     }
 

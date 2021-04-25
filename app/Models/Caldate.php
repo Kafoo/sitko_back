@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 
-class Caldate extends Model
+class Caldate extends GlobalModel
 {
     use HasFactory;
 

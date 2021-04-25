@@ -41,6 +41,11 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'myLittleLog' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'mail']
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -98,6 +103,28 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+
+        'mail' => [
+            'driver' => 'mail',
+            'to' => [
+                [
+                    'address' => 'ant.guillard@gmail.com',
+                    'name' => 'Lol'
+                ]
+            ],
+            'level' => 'debug',
+            // Optionally specify who the log mail was sent by
+            // 'from' => [
+            //     'address' => '',
+            //     'name' => ''
+            // ],
+            'subject_format' => env('LOG_MAIL_SUBJECT_FORMAT', '%message%'),
+
+            // Optionally overwrite the mailable template
+            // Two variables are sent to the view: `string $content` and `array $records`
+            // 'mailable' => NewLogMailable::class
         ],
     ],
 

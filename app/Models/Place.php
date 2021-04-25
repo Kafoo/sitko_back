@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 use App\Traits\Imageable;
 use App\Traits\Relationable;
 use App\Traits\Taggable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class Place extends Model
+class Place extends GlobalModel
 {
 	use HasFactory;
 	use Imageable ;
@@ -120,6 +120,10 @@ protected $casts = [
 			$this->events->each->delete();
 
 			$this->notes->each->delete();
+
+			$this->clearRelationships();
+
+			$this->clearNotifications();
 
 			$response = parent::delete();
 

@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Traits\Caldatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Imageable;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 use App\Traits\Taggable;
 use App\Traits\Projent;
 
-class Project extends Model
+class Project extends GlobalModel
 {
     use HasFactory;
     use Imageable;
@@ -28,7 +28,8 @@ class Project extends Model
     	'description',
         'author_id',
         'place_id',
-        'visibility'
+        'visibility',
+        'is_done'
     ];
 
     /**

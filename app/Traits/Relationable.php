@@ -26,12 +26,12 @@ trait Relationable
     return $this->morphToMany('App\Models\User', 'second', 'relationships', 'second_id', 'first_id')->withPivot('state');
 	}
 
-  public function getLinkedPlaces()
+  public function linkedPlaces()
   {
    return $this->places_relations_1->merge($this->places_relations_2);
   }
 
-  public function getLinkedUsers()
+  public function linkedUsers()
   {
    return $this->users_relations_1->merge($this->users_relations_2);
   }
@@ -81,6 +81,15 @@ trait Relationable
 
     return $isLinked;
 
+  }
+
+  public function clearRelationships(){
+  
+    $this->places_relations_1()->detach();
+    $this->places_relations_2()->detach();
+    $this->users_relations_1()->detach();
+    $this->users_relations_2()->detach();
+  
   }
 
 }

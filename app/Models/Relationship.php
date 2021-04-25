@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 
-class Relationship extends Model
+class Relationship extends GlobalModel
 {
     use HasFactory;
 

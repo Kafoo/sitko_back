@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\GlobalModel;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
-class Image extends Model
+class Image extends GlobalModel
 {
     use HasFactory;
 

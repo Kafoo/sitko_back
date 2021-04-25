@@ -27,6 +27,7 @@ class ProjectResource extends JsonResource
             'place' => $this->place,
             'place_id' => $this->place_id,
             'visibility' => $this->visibility,
+            'is_done' => $this->is_done,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'can' => $this->permissions()

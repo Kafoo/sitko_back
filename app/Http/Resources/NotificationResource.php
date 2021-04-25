@@ -42,6 +42,10 @@ class NotificationResource extends JsonResource
 
     private function getRequested()
     {
+
+        $lol = Place::find($this->data['requested_id']);
+
+
         if ($this->data['requested_type'] === 'user') {
             return new AuthResource(auth()->user());
         }elseif ($this->data['requested_type'] === 'place'){
