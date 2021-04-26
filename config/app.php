@@ -168,6 +168,7 @@ return [
          */
         Laravel\Passport\PassportServiceProvider::class,
         CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
+        Cerbero\QueryFilters\Providers\QueryFiltersServiceProvider::class,
 
         /*
          * Application Service Providers...

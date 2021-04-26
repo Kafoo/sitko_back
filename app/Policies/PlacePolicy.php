@@ -67,6 +67,17 @@ class PlacePolicy
     }
 
     /**
+     * Determine whether the user can create entity within the place.
+     *
+     * @param  \App\Models\User  $user
+     * @return mixed
+     */
+    public function createEntity(User $user, Place $place)
+    {
+        return $user->id === $place->author_id;
+    }
+
+    /**
      * Determine whether the user can join the place.
      *
      * @param  \App\Models\User  $user

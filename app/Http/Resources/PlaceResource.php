@@ -44,6 +44,7 @@ class PlaceResource extends JsonResource
         return [
             'update' => Gate::allows('update', $this->resource),
             'link' => Gate::allows('link', $this->resource),
+            'createEntity' => Gate::allows('createEntity', $this->resource),
         ];
     }
 

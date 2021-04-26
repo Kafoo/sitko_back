@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PlaceRequest;
 use App\Models\Place;
 use App\Http\Resources\PlaceResource;
-use Illuminate\Http\Request;
+use App\QueryFilters\PlaceFilters;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -19,9 +19,9 @@ class PlaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(PlaceFilters $filters)
     {
-        $places = $this->visibilityFilter(Place::all());
+        $places = $this->visibilityFilter(Place::filterBy($filters)->get());
 
         return PlaceResource::collection($places);
 
@@ -62,10 +62,8 @@ class PlaceController extends Controller
      * @param  \App\Models\Place  $place
      * @return \Illuminate\Http\Response
      */
-    public function show($placeId)
+    public function show(Place $place)
     {
-        $place = Place::find($placeId);
-
         Gate::authorize('view', $place);
 
         return new PlaceResource($place);

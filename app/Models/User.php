@@ -11,6 +11,7 @@ use App\Traits\Imageable;
 use App\Traits\Notifiable;
 use App\Traits\Taggable;
 use App\Traits\Relationable;
+use Cerbero\QueryFilters\FiltersRecords;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -21,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasPermissions;
     use Imageable;
     use Taggable, Relationable;
+	use FiltersRecords;
 
     /**
      * The attributes that are mass assignable.

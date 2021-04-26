@@ -5,24 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\AuthResource;
 use App\Http\Resources\UserResource;
-use Illuminate\Http\Request;
 use App\Models\User;
+use App\QueryFilters\UserFilters;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
 
     protected $model = User::class;
 
-    public function index()
+    public function index(UserFilters $filters)
     {
-        //
+        $places = $this->visibilityFilter(User::filterBy($filters)->get());
+
+        return UserResource::collection($places);
+
     }
 
 
     public function show(User $user)
     {
+        Gate::authorize('view', $user);
+
         return new UserResource($user);
+
     }
 
 

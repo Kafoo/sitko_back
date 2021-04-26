@@ -9,12 +9,14 @@ use App\Traits\Relationable;
 use App\Traits\Taggable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Cerbero\QueryFilters\FiltersRecords;
 
 class Place extends GlobalModel
 {
 	use HasFactory;
 	use Imageable ;
   use Taggable, Relationable;
+	use FiltersRecords;
 
 	/**
 		* The attributes that are mass assignable.
@@ -42,8 +44,6 @@ protected $casts = [
 			'created_at',
 			'updated_at'
 	];
-
-  public $with = ['image', 'tags', 'author'];
 
 	public function author()
 	{
