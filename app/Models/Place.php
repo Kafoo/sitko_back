@@ -62,9 +62,7 @@ protected $casts = [
 
 	public function active_projects()
 	{
-			return $this->hasMany('App\Models\Project')->whereHas('caldates', function ($query) {
-            $query->where('start', '>', Carbon::now()->toDateTimeString());
-        });
+			return $this->hasMany('App\Models\Project')->where('is_done', 1);
 	}
 
 	public function events()
