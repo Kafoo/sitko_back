@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class LinkRequest extends Notification implements ShouldQueue
+class LinkConfirmation extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -29,13 +29,13 @@ class LinkRequest extends Notification implements ShouldQueue
         $this->requesting = $arr['requesting'];
         $this->requested = $arr['requested'];
 
-        if ($this->requested->getMorphClass() === "user") {
-            $this->message = '<strong>'.$this->requesting->name.'</strong> aimerait se connecter à vous.';
-        } else if ($this->requested->getMorphClass() === "place") {
-            $this->message = '<strong>'.$this->requesting->name.'</strong> aimerait se connecter à "<strong>'.$this->requested->name .'</strong>"';
+        if ($this->requesting->getMorphClass() === "user") {
+            $this->message = '<strong>'.$this->requested->name.'</strong> a accepté votre demande de lien.';
+        } else if ($this->requesting->getMorphClass() === "place") {
+            $this->message = '<strong>'.$this->requested->name.'</strong> a accepté la demande de lien de "<strong>'.$this->requesting->name .'</strong>"';
         }
 
-        $uri = "user/".$this->requesting->id;
+        $uri = $this->requested->getMorphClass()."/".$this->requested->id;
         $this->vue_link = "/".$uri;
         $this->external_link = url(config('mail.frontpage_url').$uri);
 
@@ -61,10 +61,10 @@ class LinkRequest extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
     
-    return (new MailMessage)
-                ->subject('Nouvelle demande de lien !')
-                ->line(new HtmlString($this->message))
-                ->action('Voir le profil de '.$this->requesting->name, $this->external_link);
+        return (new MailMessage)
+                    ->subject('Lien confirmé !')
+                    ->line(new HtmlString($this->message))
+                    ->action('Voir le profil de '.$this->requested->name, $this->external_link);
     }
 
     /**
@@ -77,16 +77,15 @@ class LinkRequest extends Notification implements ShouldQueue
     {
 
         return [
-            'type' => 'link_request',
+            'type' => 'link_confirmation',
             'requesting_id' => $this->requesting->id,
             'requesting_type' => $this->requesting->getMorphClass(),
             'requested_id' => $this->requested->id,
             'requested_type' => $this->requested->getMorphClass(),
-            'requested_at' => Carbon::now()->toDateTimeString(),
+            'confirmed_at' => Carbon::now()->toDateTimeString(),
             'message' => $this->message,
             'external_link' => $this->external_link,
             'vue_link' => $this->vue_link,
-            'state' => 'pending'
         ];
     }
 

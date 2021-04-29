@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Support\Facades\DB;
 
 class Notification extends DatabaseNotification
 {
@@ -12,6 +12,24 @@ class Notification extends DatabaseNotification
     public function getDateFormat()
     {
         return 'Y-m-d H:i:s.u';
+    }
+
+    public function getCreatedAtAttribute($date)
+    {
+        $date = new DateTime($date);
+        return $date->format('Y-m-d H:i:s.u');
+    }
+
+    public function getUpdatedAtAttribute($date)
+    {
+        $date = new DateTime($date);
+        return $date->format('Y-m-d H:i:s.u');
+    }
+
+    public function getReadAtAttribute($date)
+    {
+        $date = new DateTime($date);
+        return $date->format('Y-m-d H:i:s.u');
     }
 
 }

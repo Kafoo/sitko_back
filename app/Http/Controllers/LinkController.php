@@ -39,10 +39,6 @@ class LinkController extends Controller {
                 
             }else{
 
-                $arr = [
-                    'requesting' => auth()->user(),
-                    'requested' => $requested
-                ];
 
                 $relation = new \App\Models\Relationship([
                                 'first_id' => auth()->user()->id,
@@ -61,6 +57,11 @@ class LinkController extends Controller {
 
             return $this->exceptionResponse($e,  $fail_message);
         }
+
+        $arr = [
+            'requesting' => auth()->user(),
+            'requested' => $requested
+        ];
         
         if ($requested->getMorphClass() === "place") {
             $requested->author->notify(new \App\Notifications\LinkRequest($arr));
@@ -179,6 +180,17 @@ class LinkController extends Controller {
             return $this->exceptionResponse($e,  $fail_message);
         }
     
+        $arr = [
+            'requested' => $requested,
+            'requesting' => $requesting
+        ];
+
+        if ($requesting->getMorphClass() === "place") {
+            $requesting->author->notify(new \App\Notifications\LinkConfirmation($arr));
+        }else{
+            $requesting->notify(new \App\Notifications\LinkConfirmation($arr));
+        }
+
         DB::commit();
 
         return response()->json([

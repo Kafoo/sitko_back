@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\ProcessLog;
+use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,18 @@ use Illuminate\Database\Eloquent\Model;
 class GlobalModel extends Model
 {
     use HasFactory;
+
+    public function getCreatedAtAttribute($date)
+    {
+        $date = new DateTime($date);
+        return $date->format('Y-m-d H:i:s.u');
+    }
+
+    public function getUpdatedAtAttribute($date)
+    {
+        $date = new DateTime($date);
+        return $date->format('Y-m-d H:i:s.u');
+    }
 
     public static function boot()
     {

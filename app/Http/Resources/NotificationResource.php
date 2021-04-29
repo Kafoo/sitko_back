@@ -17,19 +17,40 @@ class NotificationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->data['type'],
-            'requesting' => $this->getRequesting(),
-            'requesting_type' => $this->data['requesting_type'],
-            'requested' => $this->getRequested(),
-            'requested_type' => $this->data['requested_type'],
-            'requested_at' => $this->data['requested_at'],
             'read_at' => $this->read_at,
-            'state' => $this->data['state'],
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'type' => $this->data['type'],
+            'link' => $this->data['vue_link'],
+            'message' => $this->data['message'],
+            'specifics' => $this->getSpecifics()
         ];
     }
 
+    private function getSpecifics()
+    {
+        if ($this->data['type'] === "link_request" ||
+            $this->data['type'] === "link_confirmation") {
+            return [
+                'requesting' => $this->getRequesting(),
+                'requesting_type' => $this->data['requesting_type'],
+                'requested' => $this->getRequested(),
+                'requested_type' => $this->data['requested_type'],
+                'state' => $this->getState(),
+            ];
+        } else {
+            return null;
+        }
+    }
+
+    private function getState()
+    {
+      if (array_key_exists('state', $this->data) ) {
+        return $this->data['state'];
+      }else{
+        return null;
+      }
+    }
 
     private function getRequesting()
     {

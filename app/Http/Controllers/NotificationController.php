@@ -82,11 +82,11 @@ class NotificationController extends Controller
 
         try {       
 
-            if ($notification->data['state'] !== "pending") {
-                $notification->delete();
-            }else{
+            if ($notification->data['type'] === "link_request" && 
+                $notification->data['state'] === "pending") {
                 throw new \Exception("Error Processing Request", 1);
-                
+            }else{
+                $notification->delete();                
             }
 
         } catch (\Exception $e) {
