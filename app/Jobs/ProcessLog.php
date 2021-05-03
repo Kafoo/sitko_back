@@ -31,6 +31,8 @@ class ProcessLog implements ShouldQueue
      */
     public function handle()
     {
-        Log::channel('myLittleLog')->info($this->message);
+        if (config('app.env') === 'production') {
+            Log::channel('myLittleLog')->info($this->message);
+        }
     }
 }

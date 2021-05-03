@@ -28,8 +28,12 @@ class Notification extends DatabaseNotification
 
     public function getReadAtAttribute($date)
     {
-        $date = new DateTime($date);
-        return $date->format('Y-m-d H:i:s.u');
+        if ($date) {
+            $date = new DateTime($date);
+            return $date->format('Y-m-d H:i:s.u');
+        }else{
+            return null;
+        }
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Mail\GlobalMail;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -9,15 +10,13 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class LinkConfirmation extends Notification implements ShouldQueue
+class LinkConfirmation extends LinkNotification implements ShouldQueue
 {
     use Queueable;
 
     protected $requesting;
     protected $requested;
-    protected $message;
-    protected $external_link;
-    protected $vue_link;
+    protected $notifiable;
 
     /**
      * Create a new notification instance.
@@ -28,28 +27,30 @@ class LinkConfirmation extends Notification implements ShouldQueue
     {
         $this->requesting = $arr['requesting'];
         $this->requested = $arr['requested'];
-
-        if ($this->requesting->getMorphClass() === "user") {
-            $this->message = '<strong>'.$this->requested->name.'</strong> a accepté votre demande de lien.';
-        } else if ($this->requesting->getMorphClass() === "place") {
-            $this->message = '<strong>'.$this->requested->name.'</strong> a accepté la demande de lien de "<strong>'.$this->requesting->name .'</strong>"';
-        }
-
-        $uri = $this->requested->getMorphClass()."/".$this->requested->id;
-        $this->vue_link = "/".$uri;
-        $this->external_link = url(config('mail.frontpage_url').$uri);
-
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
+    private function getMessage()
     {
-        return ['database', 'mail'];
+        if ($this->requesting->getMorphClass() === "user") {
+            return trans('emails.link_confirmation.toUser', 
+                        ['requested' => $this->requested->name]
+                        , $this->notifiable->locale);
+        } else if ($this->requesting->getMorphClass() === "place") {
+            return trans('emails.link_confirmation.toPlace', 
+                        ['requesting' => $this->requesting->name,
+                        'requested' => $this->requested->name],
+                        $this->notifiable->locale);;
+        }
+    }
+
+    private function getVueLink()
+    {
+        return "/".$this->requested->getMorphClass()."/".$this->requested->id;
+    }
+
+    private function getExternalLink()
+    {
+        return url(config('mail.frontpage_url').$this->requested->getMorphClass()."/".$this->requested->id);
     }
 
     /**
@@ -60,11 +61,22 @@ class LinkConfirmation extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-    
-        return (new MailMessage)
-                    ->subject('Lien confirmé !')
-                    ->line(new HtmlString($this->message))
-                    ->action('Voir le profil de '.$this->requested->name, $this->external_link);
+        $this->notifiable = $notifiable;
+
+        $requested_type = $this->requested->getMorphClass();
+
+        $url_text = trans('emails.goto.'.$requested_type,
+                        [$requested_type => $this->requested->name], 
+                        $notifiable->locale);
+        
+        return $this->getMail([
+            'subject' => trans('emails.link_confirmation.subject', [], $notifiable->locale),
+            'content' => new HtmlString($this->getMessage()),
+            'url' => $this->getExternalLink(),
+            'url_text' => $url_text,
+            'locale' => $notifiable->locale
+        ]);
+
     }
 
     /**
@@ -75,7 +87,7 @@ class LinkConfirmation extends Notification implements ShouldQueue
      */
     public function toDatabase($notifiable)
     {
-
+        $this->notifiable = $notifiable;
         return [
             'type' => 'link_confirmation',
             'requesting_id' => $this->requesting->id,
@@ -83,22 +95,10 @@ class LinkConfirmation extends Notification implements ShouldQueue
             'requested_id' => $this->requested->id,
             'requested_type' => $this->requested->getMorphClass(),
             'confirmed_at' => Carbon::now()->toDateTimeString(),
-            'message' => $this->message,
-            'external_link' => $this->external_link,
-            'vue_link' => $this->vue_link,
+            'message' => $this->getMessage(),
+            'external_link' => $this->getExternalLink(),
+            'vue_link' => $this->getVueLink(),
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
-    }
 }

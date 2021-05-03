@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Place;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class NotificationResource extends JsonResource
@@ -15,6 +16,7 @@ class NotificationResource extends JsonResource
      */
     public function toArray($request)
     {
+    
         return [
             'id' => $this->id,
             'read_at' => $this->read_at,
@@ -64,11 +66,8 @@ class NotificationResource extends JsonResource
     private function getRequested()
     {
 
-        $lol = Place::find($this->data['requested_id']);
-
-
         if ($this->data['requested_type'] === 'user') {
-            return new AuthResource(auth()->user());
+            return new UserResource(User::find($this->data['requested_id']));
         }elseif ($this->data['requested_type'] === 'place'){
             return new PlaceResource(Place::find($this->data['requested_id']));
         }
