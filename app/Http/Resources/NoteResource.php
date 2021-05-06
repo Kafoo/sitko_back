@@ -21,7 +21,7 @@ class NoteResource extends JsonResource
             'author_id' => $this->author_id,
             'author' => $this->author,
             'description' => $this->description,
-            'place' => $this->place,
+            'place' => new PlaceResource($this->place),
             'place_id' => $this->place_id,
             'visibility' => $this->visibility,
             'created_at' => $this->created_at,

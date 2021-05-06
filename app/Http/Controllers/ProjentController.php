@@ -163,9 +163,15 @@ class ProjentController extends Controller
 
     private function incoming($projents){
 
-        return $projents->whereHas('caldates', function ($query) {
-            $query->where('start', '>', Carbon::now()->toDateTimeString());
-        });
+        if ($this->projent_type === "project") {
+            return $projents->where('is_done', 0);
+        }
+
+        if ($this->projent_type === "event") {
+            return $projents->whereHas('caldates', function ($query) {
+                $query->where('start', '>', Carbon::now()->toDateTimeString());
+            });
+        }
     }
 
 }

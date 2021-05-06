@@ -24,7 +24,7 @@ class ProjectResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image,
             'tags' => $this->tags,
-            'place' => $this->place,
+            'place' => new PlaceResource($this->place),
             'place_id' => $this->place_id,
             'visibility' => $this->visibility,
             'is_done' => $this->is_done,
