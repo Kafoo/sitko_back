@@ -11,4 +11,11 @@ class Visibility extends GlobalModel
 
     protected $table = 'visibilities';
 
+    public $appends = ['translated_name'];
+
+    public function getTranslatedNameAttribute()
+    {
+        return trans('appData.visibilities.'.$this->name);
+    }
+
 }

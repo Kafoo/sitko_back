@@ -6,6 +6,8 @@ namespace App\Http\Requests;
 
 class UserRequest extends GlobalRequest
 {
+
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,6 +16,19 @@ class UserRequest extends GlobalRequest
     public function authorize()
     {
         return true;
+    }
+
+    /**
+    * Prepare the data for validation.
+    *
+    * @return void
+    */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_type_id' => $this->user_type['id'],
+            'home_type_id' => $this->home_type['id'],
+        ]);
     }
 
     /**
@@ -27,16 +42,25 @@ class UserRequest extends GlobalRequest
         //First Name will be considered as Alias if no Last Name is provided.
         //If so, Alias has to be unique 
         if ($this->last_name) {
-            $nameRules = ['required', 'string', 'max:255'];
+            $nameRules = ['required', 'string', 'max:20'];
         }else{ 
-            $nameRules = ['required', 'string', 'max:255', 'unique:users,name,'.auth()->id()];
+            $nameRules = ['required', 'string', 'max:20', 'unique:users,name,'.auth()->id()];
         }
 
         return [
             'name' => $nameRules,
-            'last_name' => ['max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.auth()->id()],
+            'last_name' => ['max:20'],
+            'email' => ['required', 'string', 'email', 'unique:users,email,'.auth()->id()],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'bio' => ['nullable', 'string', 'max:255'],
+            'expectations' => ['nullable', 'string', 'max:255'],
+            'user_type_id' => ['nullable', 'numeric'],
+            'home_type_id' => ['nullable', 'numeric'],
+            'contact_infos' => ['nullable', 'array'],
+            'contact_infos.facebook' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
+            'contact_infos.instagram' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
+            'contact_infos.youtube' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
+            'contact_infos.email' => ['nullable', 'string', 'email']
         ];
 
         return [

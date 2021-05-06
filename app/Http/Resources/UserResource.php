@@ -22,6 +22,11 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'image' => $this->image,
             'tags' => $this->tags,
+            'bio' => $this->bio,
+            'expectations' => $this->expectations,
+            'user_type' => $this->user_type,
+            'home_type' => $this->home_type,
+            'contact_infos' => $this->contact_infos ?? json_decode('{}'),
             'link' => $this->getLinkState(),
             'can' => $this->permissions(),
         ];

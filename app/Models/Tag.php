@@ -39,7 +39,7 @@ class Tag extends GlobalModel
         if ($this->custom) {
             return $this->title;
         }else{
-            return trans('tags.'.$this->title);
+            return trans('appData.tags.'.$this->title);
         }
     }
 

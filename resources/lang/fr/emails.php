@@ -37,7 +37,7 @@ return [
     ],
     'goto' => [
         'place' => 'Page du lieu ":place"',
-        'user' => 'Profil de ":user"',
+        'user' => 'Profil de :user',
     ]
     
 

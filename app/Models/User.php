@@ -15,6 +15,7 @@ use Cerbero\QueryFilters\FiltersRecords;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
+use stdClass;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -34,6 +35,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name',
         'email',
         'password',
+        'bio',
+        'expectations',
+        'user_type_id',
+        'home_type_id',
+        'contact_infos'
     ];
 
     /**
@@ -53,14 +59,32 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'contact_infos' => 'json',
     ];
 
-    public $with = ['image', 'tags'];
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'contact_infos' => '{}'
+    ];
 
 	public function places()
 	{
         return $this->hasMany('App\Models\Place', 'author_id');
 	}
+
+	public function user_type()
+	{
+        return $this->hasOne('App\Models\UserType', 'id', 'user_type_id');
+	}
+
+	public function home_type()
+	{
+        return $this->hasOne('App\Models\HomeType', 'id', 'home_type_id');
+	}    
 
 	public function joined_places()
 	{
@@ -75,14 +99,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function update(array $attributes = [], array $options = [])
     {
 
-        $arr = [
-            'name'=> $attributes['name'],
-            'last_name'=> $attributes['last_name'],
-            'email'=> $attributes['email']
-        ];
+        $arr = $attributes;
 
         if ($attributes['password']) {
             $arr['password'] = Hash::make($attributes['password']);
+        }else{
+            unset($arr['password']);
         }
 
         $response = parent::update($arr, $options);

@@ -25,7 +25,7 @@ class Tags_category extends GlobalModel
 
     public function getTranslatedNameAttribute()
     {
-        return trans('tags.categories.'.$this->name);
+        return trans('appData.tags.categories.'.$this->name);
     }
 
 	public function tags()
