@@ -25,10 +25,17 @@ class UserRequest extends GlobalRequest
     */
     protected function prepareForValidation()
     {
+
+        if ($this->user_type) {
         $this->merge([
             'user_type_id' => $this->user_type['id'],
+        ]);
+        }
+        if ($this->home_type) {
+        $this->merge([
             'home_type_id' => $this->home_type['id'],
         ]);
+        }
     }
 
     /**
