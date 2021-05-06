@@ -50,7 +50,8 @@ class UserController extends Controller
         DB::commit();
         return response()->json([
             'success' => trans('crud.success.user.update'),
-            'user' => new AuthResource($user)
+            'auth' => new AuthResource($user),
+            'user' => new UserResource($user)
         ], 200);
     }
 
