@@ -67,7 +67,8 @@ class UserRequest extends GlobalRequest
             'contact_infos.facebook' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
             'contact_infos.instagram' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
             'contact_infos.youtube' => ['nullable', 'string', 'url', 'regex:/^(http|https)/'],
-            'contact_infos.email' => ['nullable', 'string', 'email']
+            'contact_infos.email' => ['nullable', 'string', 'email'],
+            'preferences' => ['nullable', 'array']
         ];
 
         return [

@@ -39,7 +39,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'expectations',
         'user_type_id',
         'home_type_id',
-        'contact_infos'
+        'contact_infos',
+        'preferences'
     ];
 
     /**
@@ -60,6 +61,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'contact_infos' => 'json',
+        'preferences' => 'json',
     ];
 
     /**
@@ -68,7 +70,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $attributes = [
-        'contact_infos' => '{}'
+        'contact_infos' => '{}',
+        'preferences' => '{"email":{"links":true}}'
     ];
 
 	public function places()

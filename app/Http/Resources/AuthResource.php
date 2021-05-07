@@ -25,6 +25,7 @@ class AuthResource extends JsonResource
             'user_type' => $this->user_type,
             'home_type' => $this->home_type,
             'contact_infos' => $this->contact_infos ?? json_decode('{}'),
+            'preferences' => $this->preferences ?? json_decode('{}'),
             'image' => $this->image,
             'email_verified_at' => $this->email_verified_at,
             'places' => PlaceResource::collection($this->places),

@@ -28,16 +28,29 @@ class GlobalModel extends Model
     {
         parent::boot();
 
-        self::created(function($model){
-            static::log('Nouvelle création !', $model);
+        $arr = [
+            'place',
+            'event',
+            'project',
+            'user'
+        ];
+
+        self::created(function($model)use($arr){
+            if (in_array($model->getMorphClass(), $arr)) {
+                static::log('Nouvelle création !', $model);
+            }
         });
 
-        self::updated(function($model){
-            static::log('Nouvelle modification !', $model);
+        self::updated(function($model)use($arr){
+            if (in_array($model->getMorphClass(), $arr)) {
+                static::log('Nouvelle modification !', $model);
+            }
         });
 
-        self::deleted(function($model){
-            static::log('Nouvelle suppression !', $model);
+        self::deleted(function($model)use($arr){
+            if (in_array($model->getMorphClass(), $arr)) {
+                static::log('Nouvelle suppression !', $model);
+            }
         });
     }
 
