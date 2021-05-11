@@ -62,7 +62,7 @@ protected $casts = [
 
 	public function active_projects()
 	{
-			return $this->hasMany('App\Models\Project')->where('is_done', 1);
+			return $this->hasMany('App\Models\Project')->where('is_done', 0);
 	}
 
 	public function events()
