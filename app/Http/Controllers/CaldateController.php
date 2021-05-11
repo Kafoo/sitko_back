@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CaldateResource;
 use App\Models\Caldate;
 use App\Models\Place;
 use Illuminate\Http\Request;
@@ -19,13 +20,15 @@ class CaldateController extends Controller
         #Index by place
 
         if ($place_id) {
-            return Place::find($place_id)->caldates()->with(['child'])->get();
+            $caldates = Place::find($place_id)->caldates()->get();
 
         # Index all
 
         }else{
-            return Caldate::with('child')->get();
+            $caldates = Caldate::get();
         }
+
+        return CaldateResource::Collection($caldates);
 
     }
 
