@@ -10,6 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Laravel\Passport\HasApiTokens;
 
 class RegisterController extends Controller
 {
@@ -64,6 +67,16 @@ class RegisterController extends Controller
     }
 
     /**
+     * Get the guard to be used during registration.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
+    }
+
+    /**
      * Handle a registration request for the application.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -71,15 +84,29 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
 
-        event(new Registered($user = $this->create($request->all())));
+        DB::beginTransaction();
 
-        $this->guard()->login($user);
+        try {
 
-        if ($response = $this->registered($request, $user)) {
-            return $response;
+            $this->validator($request->all())->validate();
+
+            event(new Registered($user = $this->create($request->all())));
+
+            $this->guard()->login($user);
+
+            if ($response = $this->registered($request, $user)) {
+                DB::commit();
+                return $response;
+            }
+
+        } catch (\Exception $e) {
+
+            return $this->exceptionResponse($e, trans('crud.fail.user.creation'));
         }
+
+
+        DB::commit();
 
         return $request->wantsJson()
                     ? new JsonResponse([], 201)
@@ -118,6 +145,9 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
+
+        $user->notify(new \App\Notifications\Welcome);
+
         return response()->json([
             'token'    => $user->createToken($request->input('device_name'))->accessToken,
             'user'     => new AuthResource($request->user())

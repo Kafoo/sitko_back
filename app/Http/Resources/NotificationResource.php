@@ -25,6 +25,7 @@ class NotificationResource extends JsonResource
             'type' => $this->data['type'],
             'link' => $this->data['vue_link'],
             'message' => $this->data['message'],
+            'image' => array_key_exists('image', $this->data) ? $this->data['image'] : null,
             'specifics' => $this->getSpecifics()
         ];
     }

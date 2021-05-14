@@ -55,12 +55,16 @@ class GlobalModel extends Model
     }
 
     static function log($message, $model){
+        if (auth()->user()) {
+            $user = auth()->user()->name.' ('.auth()->user()->id.')';
+            $model = $model->getMorphClass().' ('.$model->id.')';
 
-        $user = auth()->user()->name.' ('.auth()->user()->id.')';
-        $model = $model->getMorphClass().' ('.$model->id.')';
-
-        dispatch(new ProcessLog(
-            $message.' --- User : '.$user.' / Model : '.$model));
+            dispatch(new ProcessLog(
+                $message.' --- User : '.$user.' / Model : '.$model));
+        }else{
+            dispatch(new ProcessLog(
+                'Nouvel utilisateur !'));
+        }
     }
 
     public function clearNotifications()

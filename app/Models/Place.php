@@ -28,11 +28,13 @@ class Place extends GlobalModel
 		'description',
 		'author_id',
 		'location',
-		'visibility'
+		'visibility',
+  	'contact_infos',
 	];
 
 protected $casts = [
     'location' => 'json',
+    'contact_infos' => 'json'
 ];
 
 	/**
@@ -50,6 +52,16 @@ protected $casts = [
 			return $this->belongsTo('App\Models\User', 'author_id');
 	}
 
+	public function hosting_type()
+	{
+        return $this->hasOne('App\Models\HostingType', 'id', 'hosting_type_id');
+	}
+
+	public function hosting_duration()
+	{
+        return $this->hasOne('App\Models\HostingDuration', 'id', 'hosting_duration_id');
+	}   
+
 	public function members()
 	{
 			return $this->belongsToMany('App\Models\User');
@@ -63,6 +75,13 @@ protected $casts = [
 	public function active_projects()
 	{
 			return $this->hasMany('App\Models\Project')->where('is_done', 0);
+	}
+
+	public function incoming_events()
+	{
+			return $this->hasMany('App\Models\Event')->whereHas('caldates', function ($query) {
+            $query->where('start', '>', Carbon::now()->toDateTimeString());
+        });
 	}
 
 	public function events()
