@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlaceRequest;
+use App\Http\Resources\AuthResource;
 use App\Models\Place;
 use App\Http\Resources\PlaceResource;
 use App\QueryFilters\PlaceFilters;
@@ -51,7 +52,8 @@ class PlaceController extends Controller
 
         return response()->json([
             'success' => trans('crud.success.place.creation'),
-            'place' => new PlaceResource($newPlace)
+            'place' => new PlaceResource($newPlace),
+            'user' => new AuthResource(auth()->user())
         ], 200);
     }
 
