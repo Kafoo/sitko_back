@@ -11,20 +11,6 @@ class PlacePolicy
     use HandlesAuthorization;
 
     /**
-    * Perform pre-authorization checks.
-    *
-    * @param  \App\Models\User  $user
-    * @param  string  $ability
-    * @return void|bool
-    */
-    public function before(User $user)
-    {
-        if ($user->id == 731) {
-            return true;
-        }
-    }
-
-    /**
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -44,6 +30,11 @@ class PlacePolicy
      */
     public function view(User $user, Place $place)
     {
+
+        if ($user->id == 731) {
+            return true;
+        }
+
         if ($place->author_id == $user->id) {
             $maxVisibility = 3 ;
         } else if ($place->author && $place->author->isLinked($user)) {
@@ -75,7 +66,7 @@ class PlacePolicy
      */
     public function update(User $user, Place $place)
     {
-    
+
         return $user->id === $place->author_id;
 
     }
@@ -88,6 +79,11 @@ class PlacePolicy
      */
     public function createEntity(User $user, Place $place)
     {
+
+        if ($user->id == 731) {
+            return true;
+        }
+
         return $user->id === $place->author_id;
     }
 
