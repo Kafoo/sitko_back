@@ -67,16 +67,17 @@ class GlobalModel extends Model
         }
     }
 
+
     public function clearNotifications()
     {
 
-      $notifications = Notification::where([
-                                ['type', 'App\Notifications\LinkRequest'],
+        $notifications = Notification::where('notifiable_id', $this->id)
+                            ->orWhereIn('type', ['App\Notifications\LinkRequest', 'App\Notifications\LinkConfirmation'])
+                            ->where([
                                 ['data->requested_id', $this->id],
                                 ['data->requested_type', $this->getMorphClass()],
                             ])
                             ->orWhere([
-                                ['type', 'App\Notifications\LinkRequest'],
                                 ['data->requesting_id', $this->id],
                                 ['data->requesting_type', $this->getMorphClass()],
                             ]);
