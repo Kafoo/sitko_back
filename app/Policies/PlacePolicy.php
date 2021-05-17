@@ -32,7 +32,7 @@ class PlacePolicy
     {
         if ($place->author_id == $user->id) {
             $maxVisibility = 3 ;
-        } else if ($place->author->isLinked($user)) {
+        } else if ($place->author && $place->author->isLinked($user)) {
             $maxVisibility = 2;
         } else {
             $maxVisibility = 1;
