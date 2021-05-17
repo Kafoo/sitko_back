@@ -34,9 +34,10 @@ return [
 
       'house' => 'house',
       'appartment' => 'appartment',
-      'van' => 'van',
+      'vehicule' => 'vehicule',
       'lightweight construction' => 'lightweight construction',
-      'backpack' => 'backpack'
+      'backpack' => 'backpack',
+      'other' => 'other'
 
     ],
 

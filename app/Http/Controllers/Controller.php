@@ -9,6 +9,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 
 class Controller extends BaseController
 {
@@ -20,6 +21,8 @@ class Controller extends BaseController
 
         if ($e instanceof CustomException) {
             $info = $e->getMessage();
+        }else if ($e instanceof ValidationException){
+            throw $e;
         }else{
             if(config('app.debug')){
 
