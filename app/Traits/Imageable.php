@@ -23,6 +23,7 @@ trait Imageable {
 				if (gettype($image) === "string" ) {
 					$imageModel = new Image();
 					$imageModel->upload($image);
+		
 					$this->image = $this->image()->save($imageModel);
 
 				// Else, we should already have a proper image model 

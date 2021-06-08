@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\UploadImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -45,7 +46,7 @@ class Image extends Model
 		if (gettype($newImage) === "string" ) {
 
 			//Delete old image
-			if ($this->public_id) {
+			if ($this->public_id && $this->public_id != "downloading") {
 				Cloudinary::destroy($this->public_id);
 			}
 
@@ -73,16 +74,13 @@ class Image extends Model
     public function upload($img)
     {
 
-        $cloudinary_response = Cloudinary::upload($img);
+        dispatch(new UploadImage($this, $img));
 
-        $this->full = $cloudinary_response->getSecurePath();
-
-        $parts = explode('upload/', $this->full);
-
-        $this->medium = $parts[0].'upload/t_medium/'.$parts[1];
-        $this->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
-        $this->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-        $this->public_id = $cloudinary_response->getPublicId();
+        $this->full = "downloading" ;
+        $this->medium = "downloading" ;
+        $this->low_medium = "downloading" ;
+        $this->thumb = "downloading" ;
+        $this->public_id = "downloading" ;
 
     }
 

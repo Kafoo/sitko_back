@@ -46,6 +46,7 @@ class User extends GlobalModel implements
         'last_name',
         'email',
         'password',
+        'locale',
         'bio',
         'expectations',
         'user_type_id',

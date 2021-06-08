@@ -59,6 +59,7 @@ class UserRequest extends GlobalRequest
             'last_name' => ['max:20'],
             'email' => ['required', 'string', 'email', 'unique:users,email,'.auth()->id()],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'locale' => ['string'],
             'bio' => ['nullable', 'string'],
             'expectations' => ['nullable', 'string'],
             'user_type_id' => ['nullable', 'numeric'],
