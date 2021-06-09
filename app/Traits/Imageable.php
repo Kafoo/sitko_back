@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Exceptions\CustomException;
+use App\Jobs\UploadImage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Image;
 
@@ -19,18 +20,13 @@ trait Imageable {
 
 			try {
 
-				// If we have a string (Blob), upload it to cloudinary
-				if (gettype($image) === "string" ) {
-					$imageModel = new Image();
-					$imageModel->upload($image);
-		
-					$this->image = $this->image()->save($imageModel);
 
-				// Else, we should already have a proper image model 
-				}else{
-					$imageModel = new Image($image);
-					$this->image = $this->image()->save($imageModel);
-				}
+				$imageModel = new Image();
+				$imageModel->setDownloading($image);
+	
+				$this->image()->save($imageModel);
+
+				dispatch(new UploadImage($imageModel, $image));
 
 				$this->load('image');
 
@@ -42,6 +38,22 @@ trait Imageable {
 		}
 	}
 
+    public function changeImage($newImage){
+
+			// If we have a string (Blob)
+			if (gettype($newImage) === "string" ) {
+
+				//Delete old image
+				$this->deleteImage();
+				$this->storeImage($newImage);
+
+
+			//Else, no image or same image
+			}else if (!$newImage){
+				$this->deleteImage();
+			}
+    }
+
 	public function updateImage($newImage){
 	
 		try {
@@ -49,7 +61,8 @@ trait Imageable {
 			if ($newImage) {
 
 					if ($this->image){
-							$this->image->change($newImage);
+							$this->changeImage($newImage);
+
 					}else{
 							$this->storeImage($newImage);
 					}
@@ -72,7 +85,7 @@ trait Imageable {
 
 				$public_id = $this->image->public_id;
 
-				if($public_id){
+				if($public_id && $public_id != "downloading"){
 					Cloudinary::destroy($public_id);
 				}
 				$this->image()->delete();

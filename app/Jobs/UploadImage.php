@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class UploadImage implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     private $imageModel;
     private $newImage;
@@ -37,17 +37,26 @@ class UploadImage implements ShouldQueue
     public function handle()
     {
 
-        $cloudinary_response = Cloudinary::upload($this->newImage);
+        try {
+        
+            $cloudinary_response = Cloudinary::upload($this->newImage);
 
-        $this->imageModel->full = $cloudinary_response->getSecurePath();
+            $this->imageModel->full = $cloudinary_response->getSecurePath();
 
-        $parts = explode('upload/', $this->imageModel->full);
+            $parts = explode('upload/', $this->imageModel->full);
 
-        $this->imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
-        $this->imageModel->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
-        $this->imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
-        $this->imageModel->public_id = $cloudinary_response->getPublicId();
+            $this->imageModel->medium = $parts[0].'upload/t_medium/'.$parts[1];
+            $this->imageModel->low_medium = $parts[0].'upload/t_low_medium/'.$parts[1];
+            $this->imageModel->thumb = $parts[0].'upload/t_thumb/'.$parts[1];
+            $this->imageModel->public_id = $cloudinary_response->getPublicId();
+            $this->imageModel->save();
 
-        $this->imageModel->save();
+        } catch (\Throwable $th) {
+
+            if ($this->imageModel && $this->imageModel->full == "downloading") {
+                $this->imageModel->delete();
+            }
+        }
+
     }
 }

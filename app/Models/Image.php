@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Jobs\UploadImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class Image extends Model
 {
@@ -40,41 +38,9 @@ class Image extends Model
         'imageable_id'
     ];
 
-    public function change($newImage){
 
-		// If we have a string (Blob)
-		if (gettype($newImage) === "string" ) {
-
-			//Delete old image
-			if ($this->public_id && $this->public_id != "downloading") {
-				Cloudinary::destroy($this->public_id);
-			}
-
-			//Upload and store new image
-            $this->upload($newImage);
-            $this->save();
-
-		//Else, generic image or same image
-		}else{
-			
-			if ($this->full !== $newImage['full']) {
-
-				if ($this->public_id) {
-					Cloudinary::destroy($this->public_id);
-				}
-
-				 $this->update($newImage);
-			}else{
-				// Same images, do nothing
-			}
-		}
-    }
-
-
-    public function upload($img)
+    public function setDownloading($img)
     {
-
-        dispatch(new UploadImage($this, $img));
 
         $this->full = "downloading" ;
         $this->medium = "downloading" ;
