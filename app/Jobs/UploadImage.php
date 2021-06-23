@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Image;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -56,6 +57,10 @@ class UploadImage implements ShouldQueue
             if ($this->imageModel && $this->imageModel->full == "downloading") {
                 $this->imageModel->delete();
             }
+
+            throw $th;
+            
+
         }
 
     }

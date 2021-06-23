@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PlaceController extends Controller
+class CrudController extends Controller
 {
 
     public function action(Request $request, $entity)
