@@ -13,7 +13,6 @@ class PlaceSeeder extends Seeder
      */
     public function run()
     {
-    	  \App\Models\Place::truncate();
         $projects = \App\Models\Place::factory(10)->create();
     }
 }

@@ -52,7 +52,7 @@ class SetLocaleAcceptLanguage
         });
 
         // Standardise to hyphened separator for native use in javascript locale formatters.
-        $preferences = array_map(function (&$locale) {
+        $preferences = array_map(function ($locale) {
 
             return str_replace('_','-', $locale);
 
